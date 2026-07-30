@@ -17,16 +17,23 @@ app.get("/", (req, res) => {
     res.send("Welcome to SAAEPS Backend 🚀");
 });
 
-// Test MySQL Connection
+const User = require("./models/User");
+
+// Connect Database and Create Tables
 sequelize
-    .authenticate()
-    .then(() => {
-        console.log("✅ MySQL Connected Successfully");
-    })
-    .catch((err) => {
-        console.log("❌ Database Connection Failed");
-        console.error(err);
-    });
+  .authenticate()
+  .then(() => {
+    console.log("✅ MySQL Connected Successfully");
+
+    return sequelize.sync();
+  })
+  .then(() => {
+    console.log("✅ Database Synchronized");
+  })
+  .catch((err) => {
+    console.log("❌ Database Connection Failed");
+    console.error(err);
+  });
 
 const PORT = process.env.PORT || 5000;
 
