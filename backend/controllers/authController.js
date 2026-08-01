@@ -1,13 +1,24 @@
+const { validationResult } = require("express-validator");
+
 const registerUser = async (req, res) => {
 
-    console.log("🔥 registerUser called");
-    console.log(req.body);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            errors: errors.array(),
+        });
+    }
 
     res.status(200).json({
         success: true,
-        message: "Register API Working Successfully"
+        message: "Validation Successful",
+        data: req.body,
     });
 
 };
 
-module.exports = { registerUser };
+module.exports = {
+    registerUser,
+};
