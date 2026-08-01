@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const registerUser = async (req, res) => {
@@ -59,7 +60,66 @@ const user = await User.create({
         });
     }
 };
+const loginUser = async (req, res) => {
+    try {
 
+        const { email, password } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({
+            where: { email }
+        });
+
+        // User not found
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+// Compare Password
+const isMatch = await bcrypt.compare(password, user.password);
+
+if (!isMatch) {
+    return res.status(401).json({
+        success: false,
+        message: "Invalid Password"
+    });
+}
+// Generate JWT Token
+const token = jwt.sign(
+    {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+    },
+    process.env.JWT_SECRET,
+    {
+        expiresIn: "1d",
+    }
+);
+       res.status(200).json({
+    success: true,
+    message: "Login Successful",
+    token,
+    user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+    },
+});
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+};
 module.exports = {
     registerUser,
+    loginUser,
 };
