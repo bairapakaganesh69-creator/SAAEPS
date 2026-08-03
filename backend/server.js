@@ -8,26 +8,41 @@ console.log("========== SERVER STARTED ==========");
 console.log(__filename);
 
 const sequelize = require("./config/db");
+
+// Import Models
+require("./models/User");
+
+// Import Routes
 const authRoutes = require("./routes/authRoutes");
+const aiRoutes = require("./routes/ai.routes");
 
 console.log("✅ authRoutes loaded");
-
-const User = require("./models/User");
+console.log("✅ aiRoutes loaded");
 
 const app = express();
 
-// Middlewares
+/* ==========================
+   Middlewares
+========================== */
+
 app.use(cors());
 app.use(express.json());
 
-// Routes
+/* ==========================
+   Routes
+========================== */
+
 app.use("/api/auth", authRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
-    res.send("Welcome to SAAEPS Backend 🚀");
+    res.send("🚀 Welcome to SAAEPS Backend");
 });
 
-// Connect Database and Create Tables
+/* ==========================
+   Database Connection
+========================== */
+
 sequelize
     .authenticate()
     .then(() => {
@@ -38,9 +53,13 @@ sequelize
         console.log("✅ Database Synchronized");
     })
     .catch((err) => {
-        console.log("❌ Database Connection Failed");
+        console.error("❌ Database Connection Failed");
         console.error(err);
     });
+
+/* ==========================
+   Start Server
+========================== */
 
 const PORT = process.env.PORT || 5000;
 
