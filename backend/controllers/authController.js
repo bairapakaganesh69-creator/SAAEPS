@@ -77,6 +77,7 @@ const loginUser = async (req, res) => {
                 message: "User not found"
             });
         }
+       
 // Compare Password
 const isMatch = await bcrypt.compare(password, user.password);
 
@@ -119,7 +120,52 @@ const token = jwt.sign(
         });
     }
 };
+ const getProfile = async (req, res) => {
+
+    try {
+
+        const user = await User.findByPk(req.user.id, {
+            attributes: {
+                exclude: ["password"],
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Profile Retrieved Successfully",
+            user,
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+        });
+
+    }
+
+};
+const adminDashboard = async (req, res) => {
+
+    res.status(200).json({
+        success: true,
+        message: "Welcome Admin 👑",
+    });
+
+};
 module.exports = {
     registerUser,
     loginUser,
+    getProfile,
+    adminDashboard,
 };
