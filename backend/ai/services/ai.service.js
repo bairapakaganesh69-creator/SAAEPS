@@ -1,29 +1,36 @@
-const ai = require("../config/gemini");
+const { GoogleGenAI } = require("@google/genai");
 
-async function generateResponse(systemPrompt, userPrompt) {
+const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+});
+
+const generateResponse = async (fullPrompt) => {
     try {
-
-        const fullPrompt = `
-${systemPrompt}
-
-Student Question:
-${userPrompt}
-`;
-
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.5-flash",
             contents: fullPrompt,
         });
+
+        console.log("========== GEMINI RESPONSE ==========");
+        console.log(response);
 
         return response.text;
 
     } catch (error) {
+        console.error("========== GEMINI ERROR ==========");
+        console.error(error);
 
-        console.error("Gemini Error:", error);
+        if (error.status) {
+            console.error("Status:", error.status);
+        }
 
-        throw new Error("Failed to generate AI response");
+        if (error.message) {
+            console.error("Message:", error.message);
+        }
+
+        throw error;
     }
-}
+};
 
 module.exports = {
     generateResponse,
