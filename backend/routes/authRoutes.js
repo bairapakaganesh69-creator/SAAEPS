@@ -8,12 +8,15 @@ const {
     registerUser,
     loginUser,
     getProfile,
+    verifyOTP,
+    resendOTP,
     adminDashboard,
 } = require("../controllers/authController");
-
 router.post("/register", registerUser);
 
 router.post("/login", loginUser);
+router.post("/verify-otp", verifyOTP);
+router.post("/resend-otp", resendOTP);
 
 router.get("/profile", authMiddleware, getProfile);
 router.get(

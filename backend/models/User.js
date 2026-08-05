@@ -30,6 +30,23 @@ const User = sequelize.define(
       type: DataTypes.ENUM("student", "admin"),
       defaultValue: "student",
     },
+
+    // ⭐ NEW FIELDS
+
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+
+    verificationOTP: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    otpExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
