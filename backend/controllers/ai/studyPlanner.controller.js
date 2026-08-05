@@ -22,23 +22,40 @@ const studyPlanner = async (req, res) => {
             subject,
             durationDays,
             studyHoursPerDay,
-            weakTopics
+            weakTopics,
+            strongTopics,
+            previousScore,
+            examDate
         } = req.body;
 
 
         const prompt = `
-Student Name: ${studentName}
+Student Name:
+${studentName}
 
-Goal: ${goal}
+Goal:
+${goal}
 
-Subject: ${subject}
+Subject:
+${subject}
 
-Duration (Days): ${durationDays}
+Duration:
+${durationDays} days
 
-Study Hours Per Day: ${studyHoursPerDay}
+Study Hours Per Day:
+${studyHoursPerDay}
 
 Weak Topics:
 ${JSON.stringify(weakTopics, null, 2)}
+
+Strong Topics:
+${JSON.stringify(strongTopics || [], null, 2)}
+
+Previous Performance Score:
+${previousScore || "Not provided"}
+
+Exam Date:
+${examDate || "Not provided"}
 `;
 
 
@@ -72,5 +89,5 @@ ${JSON.stringify(weakTopics, null, 2)}
 
 
 module.exports = {
-    studyPlanner,
+    studyPlanner
 };

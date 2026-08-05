@@ -1,16 +1,15 @@
 const { body } = require("express-validator");
 
+
 // ==========================
 // AI Tutor Validation
 // ==========================
 const tutorValidation = [
 
-    // Old format support
     body("prompt")
         .optional()
         .trim(),
 
-    // New intelligent tutor format
     body("subject")
         .optional()
         .trim(),
@@ -105,7 +104,30 @@ const studyPlannerValidation = [
 
     body("weakTopics")
         .isArray({ min: 1 })
-        .withMessage("Weak Topics must be an array with at least one topic")
+        .withMessage(
+            "Weak Topics must be an array with at least one topic"
+        ),
+
+    body("strongTopics")
+        .optional()
+        .isArray()
+        .withMessage(
+            "Strong Topics must be an array"
+        ),
+
+    body("previousScore")
+        .optional()
+        .isNumeric()
+        .withMessage(
+            "Previous Score must be numeric"
+        ),
+
+    body("examDate")
+        .optional()
+        .isISO8601()
+        .withMessage(
+            "Exam Date must be a valid date"
+        )
 
 ];
 
@@ -159,5 +181,5 @@ module.exports = {
     weakTopicValidation,
     feedbackValidation,
     studyPlannerValidation,
-    performanceFeedbackValidation,
+    performanceFeedbackValidation
 };
