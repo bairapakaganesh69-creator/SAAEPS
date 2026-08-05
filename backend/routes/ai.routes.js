@@ -8,6 +8,7 @@ const { tutorChat } = require("../controllers/ai/tutor.controller");
 const { weakTopicAnalyzer } = require("../controllers/ai/weakTopic.controller");
 const { feedbackGenerator } = require("../controllers/ai/feedback.controller");
 const { studyPlanner } = require("../controllers/ai/studyPlanner.controller");
+const { performanceFeedback } = require("../controllers/ai/performanceFeedback.controller");
 
 // ==========================
 // Validators
@@ -17,6 +18,7 @@ const {
     weakTopicValidation,
     feedbackValidation,
     studyPlannerValidation,
+    performanceFeedbackValidation,
 } = require("../validators/ai.validator");
 
 // ==========================
@@ -62,6 +64,16 @@ router.post(
     studyPlannerValidation,
     validateRequest,
     studyPlanner
+);
+
+// ==========================
+// Performance Feedback
+// ==========================
+router.post(
+    "/performance-feedback",
+    performanceFeedbackValidation,
+    validateRequest,
+    performanceFeedback
 );
 
 module.exports = router;

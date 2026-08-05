@@ -1,5 +1,5 @@
 const { generateResponse } = require("../../ai/services/ai.service");
-const weakTopicPrompt = require("../../ai/prompts/weakTopic.prompt");
+const performanceFeedbackPrompt = require("../../ai/prompts/performanceFeedback.prompt");
 
 const { parseAIResponse } = require("../../utils/ai/aiJsonParser");
 
@@ -12,38 +12,54 @@ const {
 } = require("../../utils/ai/aiErrorHandler");
 
 
-const weakTopicAnalyzer = async (req, res) => {
+const performanceFeedback = async (req, res) => {
 
     try {
 
         const {
+            studentName,
             subject,
             totalMarks,
             obtainedMarks,
-            chapterScores,
+            correctAnswers,
+            wrongAnswers,
+            timeTaken,
+            weakTopics,
+            strongTopics
         } = req.body;
 
 
         const quizData = `
+Student Name: ${studentName}
+
 Subject: ${subject}
 
 Total Marks: ${totalMarks}
 
 Obtained Marks: ${obtainedMarks}
 
-Chapter Scores:
+Correct Answers: ${correctAnswers}
 
-${JSON.stringify(chapterScores, null, 2)}
+Wrong Answers: ${wrongAnswers}
+
+Time Taken: ${timeTaken} minutes
+
+Strong Topics:
+${strongTopics?.join(", ") || "None"}
+
+Weak Topics:
+${weakTopics?.join(", ") || "None"}
 `;
 
 
         const aiResponse = await generateResponse(
-            weakTopicPrompt,
-            quizData
+            performanceFeedbackPrompt(quizData)
         );
 
 
-        const response = parseAIResponse(aiResponse);
+        const response = parseAIResponse(
+            aiResponse
+        );
 
 
         return sendSuccessResponse(
@@ -65,5 +81,5 @@ ${JSON.stringify(chapterScores, null, 2)}
 
 
 module.exports = {
-    weakTopicAnalyzer,
+    performanceFeedback
 };

@@ -1,40 +1,58 @@
 const ai = require("../config/gemini.config");
+const { retryAIRequest } = require("../../utils/ai/aiRetry");
 
-const generateResponse = async (systemPrompt, userPrompt) => {
+const {
+    logAIRequest,
+    logAIResponse,
+    logAIError
+} = require("../../utils/ai/aiLogger");
+
+const DEFAULT_MODEL = "gemini-3.5-flash";
+
+const generateResponse = async (
+    systemPrompt,
+    userPrompt = null
+) => {
 
     try {
 
-        const fullPrompt = `
-${systemPrompt}
+        const startTime = Date.now();
+
+        const fullPrompt = userPrompt
+            ? `${systemPrompt}
 
 Student Question:
 
-${userPrompt}
-`;
+${userPrompt}`
+            : systemPrompt;
 
-        console.log("========== SYSTEM PROMPT ==========\n");
-        console.log(systemPrompt);
-
-        console.log("\n========== USER PROMPT ==========\n");
-        console.log(userPrompt);
-
-        console.log("\n========== FULL PROMPT ==========\n");
-        console.log(fullPrompt);
-
-        const response = await ai.models.generateContent({
-            model: "gemini-3.5-flash",
-            contents: fullPrompt,
+        logAIRequest({
+            model: DEFAULT_MODEL,
+            systemPrompt,
+            userPrompt
         });
 
-        console.log("\n========== GEMINI RESPONSE ==========");
-        console.log(response);
+const response = await retryAIRequest(async () => {
+
+    return await ai.models.generateContent({
+        model: DEFAULT_MODEL,
+        contents: fullPrompt,
+    });
+
+});
+
+        const responseTime = Date.now() - startTime;
+
+        logAIResponse({
+            responseTime,
+            usageMetadata: response.usageMetadata
+        });
 
         return response.text;
 
     } catch (error) {
 
-        console.error("\n========== GEMINI ERROR ==========");
-        console.error(error);
+        logAIError(error);
 
         throw error;
 

@@ -93,9 +93,53 @@ const studyPlannerValidation = [
 
 ];
 
+// ==========================
+// Performance Feedback Validation
+// ==========================
+const performanceFeedbackValidation = [
+
+    body("studentName")
+        .notEmpty()
+        .withMessage("Student Name is required"),
+
+    body("subject")
+        .notEmpty()
+        .withMessage("Subject is required"),
+
+    body("totalMarks")
+        .isNumeric()
+        .withMessage("Total Marks must be a number"),
+
+    body("obtainedMarks")
+        .isNumeric()
+        .withMessage("Obtained Marks must be a number"),
+
+    body("correctAnswers")
+        .isNumeric()
+        .withMessage("Correct Answers must be a number"),
+
+    body("wrongAnswers")
+        .isNumeric()
+        .withMessage("Wrong Answers must be a number"),
+
+    body("timeTaken")
+        .isNumeric()
+        .withMessage("Time Taken must be a number"),
+
+    body("weakTopics")
+        .isArray()
+        .withMessage("Weak Topics must be an array"),
+
+    body("strongTopics")
+        .isArray()
+        .withMessage("Strong Topics must be an array")
+
+];
+
 module.exports = {
     tutorValidation,
     weakTopicValidation,
     feedbackValidation,
     studyPlannerValidation,
+    performanceFeedbackValidation,
 };

@@ -1,8 +1,19 @@
 const { generateResponse } = require("../../ai/services/ai.service");
 const plannerPrompt = require("../../ai/prompts/planner.prompt");
-const { parseAIResponse } = require("../../utils/responseParser");
+
+const { parseAIResponse } = require("../../utils/ai/aiJsonParser");
+
+const {
+    sendSuccessResponse
+} = require("../../utils/ai/aiResponseFormatter");
+
+const {
+    handleAIError
+} = require("../../utils/ai/aiErrorHandler");
+
 
 const studyPlanner = async (req, res) => {
+
     try {
 
         const {
@@ -13,6 +24,7 @@ const studyPlanner = async (req, res) => {
             studyHoursPerDay,
             weakTopics
         } = req.body;
+
 
         const prompt = `
 Student Name: ${studentName}
@@ -29,29 +41,35 @@ Weak Topics:
 ${JSON.stringify(weakTopics, null, 2)}
 `;
 
+
         const aiResponse = await generateResponse(
             plannerPrompt,
             prompt
         );
 
-        const parsedResponse = parseAIResponse(aiResponse);
 
-        res.status(200).json({
-            success: true,
-            response: parsedResponse
-        });
+        const parsedResponse = parseAIResponse(
+            aiResponse
+        );
+
+
+        return sendSuccessResponse(
+            res,
+            parsedResponse
+        );
+
 
     } catch (error) {
 
-        console.error("Study Planner Error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Failed to generate study plan."
-        });
+        return handleAIError(
+            res,
+            error
+        );
 
     }
+
 };
+
 
 module.exports = {
     studyPlanner,
