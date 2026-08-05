@@ -1,37 +1,65 @@
 const { generateResponse } = require("../../ai/services/ai.service");
 const tutorPrompt = require("../../ai/prompts/tutor.prompt");
 
-// Response Formatter
 const {
     sendSuccessResponse
 } = require("../../utils/ai/aiResponseFormatter");
 
-// Import the WHOLE module first
 const errorHandler = require("../../utils/ai/aiErrorHandler");
 
-console.log("\n==============================");
-console.log("Imported aiErrorHandler:");
-console.log(errorHandler);
-console.log("==============================\n");
+const {
+    handleAIError
+} = errorHandler;
 
-// Extract the function
-const { handleAIError } = errorHandler;
 
 const tutorChat = async (req, res) => {
 
     try {
 
-        const { prompt } = req.body;
+        const {
+            prompt,
+            subject,
+            topic,
+            question
+        } = req.body;
+
+
+        let userQuery;
+
+
+        // New intelligent tutor format
+        if (question) {
+
+            userQuery = `
+Subject: ${subject || "General"}
+
+Topic: ${topic || "General"}
+
+Student Question:
+${question}
+            `;
+
+        }
+
+        // Old tutor format support
+        else {
+
+            userQuery = prompt;
+
+        }
+
 
         const response = await generateResponse(
             tutorPrompt,
-            prompt
+            userQuery
         );
+
 
         return sendSuccessResponse(
             res,
             response
         );
+
 
     } catch (error) {
 
@@ -43,6 +71,7 @@ const tutorChat = async (req, res) => {
     }
 
 };
+
 
 module.exports = {
     tutorChat

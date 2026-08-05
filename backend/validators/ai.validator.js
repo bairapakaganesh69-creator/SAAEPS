@@ -5,12 +5,26 @@ const { body } = require("express-validator");
 // ==========================
 const tutorValidation = [
 
+    // Old format support
     body("prompt")
+        .optional()
+        .trim(),
+
+    // New intelligent tutor format
+    body("subject")
+        .optional()
+        .trim(),
+
+    body("topic")
+        .optional()
+        .trim(),
+
+    body("question")
+        .optional()
         .trim()
-        .notEmpty()
-        .withMessage("Prompt is required")
 
 ];
+
 
 // ==========================
 // Weak Topic Analyzer Validation
@@ -34,6 +48,7 @@ const weakTopicValidation = [
         .withMessage("Chapter Scores are required")
 
 ];
+
 
 // ==========================
 // Feedback Generator Validation
@@ -61,6 +76,7 @@ const feedbackValidation = [
         .withMessage("Strong Topics must be an array")
 
 ];
+
 
 // ==========================
 // Study Planner Validation
@@ -92,6 +108,7 @@ const studyPlannerValidation = [
         .withMessage("Weak Topics must be an array with at least one topic")
 
 ];
+
 
 // ==========================
 // Performance Feedback Validation
@@ -135,6 +152,7 @@ const performanceFeedbackValidation = [
         .withMessage("Strong Topics must be an array")
 
 ];
+
 
 module.exports = {
     tutorValidation,
