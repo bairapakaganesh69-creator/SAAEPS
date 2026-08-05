@@ -4,6 +4,8 @@ const tutorPrompt = require("../ai/prompts/tutor.prompt");
 const tutorChat = async (req, res) => {
     try {
         const { prompt } = req.body;
+        console.log("REQ BODY:", req.body);
+        console.log("PROMPT:", prompt);
 
         if (!prompt || !prompt.trim()) {
             return res.status(400).json({

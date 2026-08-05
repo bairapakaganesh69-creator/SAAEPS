@@ -4,29 +4,28 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY,
 });
 
-const generateResponse = async (fullPrompt) => {
+const generateResponse = async (systemPrompt, userPrompt) => {
     try {
+
+        // Combine system prompt and student question
+        const fullPrompt = `
+${systemPrompt}
+
+Student Question:
+${userPrompt}
+`;
+
         const response = await ai.models.generateContent({
             model: "gemini-3.5-flash",
             contents: fullPrompt,
         });
 
-        console.log("========== GEMINI RESPONSE ==========");
-        console.log(response);
-
         return response.text;
 
     } catch (error) {
+
         console.error("========== GEMINI ERROR ==========");
         console.error(error);
-
-        if (error.status) {
-            console.error("Status:", error.status);
-        }
-
-        if (error.message) {
-            console.error("Message:", error.message);
-        }
 
         throw error;
     }
