@@ -11,6 +11,7 @@ const sequelize = require("./config/db");
 
 // Import Models
 require("./models/User");
+require("./models/AICache");
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
