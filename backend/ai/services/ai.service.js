@@ -1,65 +1,65 @@
-const ai = require("../config/gemini.config");
-const { retryAIRequest } = require("../../utils/ai/aiRetry");
+const ProviderManager = require("./providerManager");
+const OllamaProvider = require("../providers/ollama.provider");
 
-const {
-    logAIRequest,
-    logAIResponse,
-    logAIError
-} = require("../../utils/ai/aiLogger");
+const providerManager = new ProviderManager();
 
-const DEFAULT_MODEL = "gemini-3.5-flash";
+// Register Ollama as the local development provider
+providerManager.registerProvider(
+    new OllamaProvider()
+);
 
 const generateResponse = async (
     systemPrompt,
-    userPrompt = null
+    userPrompt = null,
+    options = {}
 ) => {
 
-    try {
-
-        const startTime = Date.now();
-
-        const fullPrompt = userPrompt
-            ? `${systemPrompt}
+    const fullPrompt = userPrompt
+        ? `${systemPrompt}
 
 Student Question:
 
 ${userPrompt}`
-            : systemPrompt;
+        : systemPrompt;
 
-        logAIRequest({
-            model: DEFAULT_MODEL,
-            systemPrompt,
-            userPrompt
-        });
+    const result = await providerManager.generate({
+        prompt: fullPrompt,
 
-const response = await retryAIRequest(async () => {
+        systemPrompt,
 
-    return await ai.models.generateContent({
-        model: DEFAULT_MODEL,
-        contents: fullPrompt,
+        userPrompt,
+
+        temperature:
+            options.temperature,
+
+        maxTokens:
+            options.maxTokens,
+
+        think:
+            options.think ?? false,
     });
 
-});
+    if (!result.success) {
 
-        const responseTime = Date.now() - startTime;
+        const error = new Error(
+            result.error?.message ||
+            "AI generation failed"
+        );
 
-        logAIResponse({
-            responseTime,
-            usageMetadata: response.usageMetadata
-        });
+        error.code =
+            result.error?.code ||
+            "AI_SERVICE_UNAVAILABLE";
 
-        return response.text;
-
-    } catch (error) {
-
-        logAIError(error);
+        error.provider =
+            result.provider;
 
         throw error;
-
     }
 
+    return result.content;
 };
 
 module.exports = {
     generateResponse,
+    providerManager,
 };

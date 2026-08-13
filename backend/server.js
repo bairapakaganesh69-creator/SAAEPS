@@ -10,8 +10,7 @@ console.log(__filename);
 const sequelize = require("./config/db");
 
 // Import Models
-require("./models/User");
-require("./models/AICache");
+require("./models");
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
