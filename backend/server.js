@@ -4,6 +4,11 @@ dotenv.config();
 const express = require("express");
 const sendEmail = require("./services/emailService");
 const cors = require("cors");
+const Subject = require("./models/Subject");
+const Topic = require("./models/Topic");
+const Question = require("./models/Question");
+require("./models/associations");
+
 
 console.log("EMAIL_USER:", process.env.EMAIL_USER);
 console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
@@ -13,11 +18,15 @@ console.log(__filename);
 
 const sequelize = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
-
+const subjectRoutes = require("./routes/subjectRoutes");
+const topicRoutes = require("./routes/topicRoutes");
+const questionRoutes = require("./routes/questionRoutes");
 console.log("✅ authRoutes loaded");
+console.log("✅ subjectRoutes loaded");
+console.log("✅ topicRoutes loaded");
+console.log("✅ questionRoutes loaded");
 
 const User = require("./models/User");
-
 const app = express();
 
 // Middlewares
@@ -26,7 +35,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
-
+app.use("/api/subjects", subjectRoutes);
+app.use("/api/topics", topicRoutes);
+app.use("/api/questions", questionRoutes);
 app.get("/", (req, res) => {
     res.send("Welcome to SAAEPS Backend 🚀");
 });

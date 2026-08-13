@@ -326,11 +326,180 @@ SAAEPS Team`
 
     }
 };
+const forgotPassword = async (req, res) => {
+    try {
+
+        const { email } = req.body;
+
+        // Find user
+        const user = await User.findOne({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Generate 4-digit OTP
+        const otp = Math.floor(1000 + Math.random() * 9000);
+
+        // OTP valid for 10 minutes
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+        // Save OTP
+        user.resetOTP = otp;
+        user.resetOTPExpires = otpExpiry;
+        user.resetOTPVerified = false;
+
+        await user.save();
+
+        console.log("Reset OTP:", otp);
+
+        // Send Email
+        await sendEmail(
+            email,
+            "SAAEPS Password Reset OTP",
+            `Hello ${user.fullName},
+
+Your Password Reset OTP is:
+
+${otp}
+
+This OTP is valid for 10 minutes.
+
+If you did not request a password reset, please ignore this email.
+
+Regards,
+SAAEPS Team`
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Password Reset OTP Sent Successfully"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+
+    }
+};
+const verifyResetOTP = async (req, res) => {
+
+    try {
+
+        const { email, otp } = req.body;
+
+        const user = await User.findOne({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        if (user.resetOTP != otp) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP"
+            });
+        }
+
+        if (new Date() > user.resetOTPExpires) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP Expired"
+            });
+        }
+         user.resetOTPVerified = true;
+            await user.save();      
+        res.status(200).json({
+            success: true,
+            message: "Reset OTP Verified Successfully"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+
+    }
+
+};
+const resetPassword = async (req, res) => {
+    try {
+
+        const { email, newPassword } = req.body;
+
+        // Find user
+        const user = await User.findOne({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+            if (!user.resetOTPVerified) {
+    return res.status(400).json({
+        success: false,
+        message: "Please verify OTP first"
+    });
+}
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password
+        user.password = hashedPassword;
+
+        // Clear reset OTP
+        user.resetOTP = null;
+        user.resetOTPExpires = null;
+        user.resetOTPVerified = false;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Password Reset Successfully"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+
+    }
+};
 module.exports = {
     registerUser,
     loginUser,
     getProfile,
     verifyOTP,
     resendOTP,
+    forgotPassword,
+    verifyResetOTP,
+    resetPassword,
     adminDashboard,
 };

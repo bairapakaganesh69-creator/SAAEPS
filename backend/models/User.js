@@ -31,7 +31,7 @@ const User = sequelize.define(
       defaultValue: "student",
     },
 
-    // ⭐ NEW FIELDS
+    // NEW FIELDS
 
     isVerified: {
       type: DataTypes.BOOLEAN,
@@ -47,6 +47,19 @@ const User = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    resetOTP: {
+    type: DataTypes.STRING,
+    allowNull: true,
+},
+
+resetOTPExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+},
+resetOTPVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+},
   },
   {
     timestamps: true,
