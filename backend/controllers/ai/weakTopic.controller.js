@@ -1,15 +1,11 @@
-const { generateResponse } = require("../../ai/services/ai.service");
-const weakTopicPrompt = require("../../ai/prompts/weakTopic.prompt");
-
-const { parseAIResponse } = require("../../utils/ai/aiJsonParser");
+const {
+    analyzeWeakTopics
+} = require("../../services/analysis/weakTopic.service");
 
 const {
-    sendSuccessResponse
+    sendSuccessResponse,
+    sendErrorResponse
 } = require("../../utils/ai/aiResponseFormatter");
-
-const {
-    handleAIError
-} = require("../../utils/ai/aiErrorHandler");
 
 
 const weakTopicAnalyzer = async (req, res) => {
@@ -20,50 +16,41 @@ const weakTopicAnalyzer = async (req, res) => {
             subject,
             totalMarks,
             obtainedMarks,
-            chapterScores,
+            chapterScores
         } = req.body;
 
 
-        const quizData = `
-Subject: ${subject}
-
-Total Marks: ${totalMarks}
-
-Obtained Marks: ${obtainedMarks}
-
-Chapter Scores:
-
-${JSON.stringify(chapterScores, null, 2)}
-`;
-
-
-        const aiResponse = await generateResponse(
-            weakTopicPrompt,
-            quizData
-        );
-
-
-        const response = parseAIResponse(aiResponse);
+        const result = analyzeWeakTopics({
+            subject,
+            totalMarks: Number(totalMarks),
+            obtainedMarks: Number(obtainedMarks),
+            chapterScores
+        });
 
 
         return sendSuccessResponse(
             res,
-            response
+            result
         );
-
 
     } catch (error) {
 
-        return handleAIError(
-            res,
-            error
+        console.error(
+            "❌ Weak Topic Analysis Error:",
+            error.message
         );
 
+        return sendErrorResponse(
+            res,
+            error.message ||
+                "Failed to analyze weak topics.",
+            400
+        );
     }
 
 };
 
 
 module.exports = {
-    weakTopicAnalyzer,
+    weakTopicAnalyzer
 };

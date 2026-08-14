@@ -1,6 +1,20 @@
 const { generateResponse } = require("../../ai/services/ai.service");
 const feedbackPrompt = require("../../ai/prompts/feedback.prompt");
 
+const {
+    analyzeFeedback
+} = require("../../services/analysis/feedback.service");
+
+const {
+    parseAIResponse
+} = require("../../utils/ai/aiJsonParser");
+
+const {
+    sendSuccessResponse,
+    sendErrorResponse
+} = require("../../utils/ai/aiResponseFormatter");
+
+
 const feedbackGenerator = async (req, res) => {
 
     try {
@@ -10,46 +24,97 @@ const feedbackGenerator = async (req, res) => {
             subject,
             percentage,
             weakTopics,
-            strongTopics,
+            strongTopics
         } = req.body;
 
+
+        // ------------------------------------------
+        // STEP 1: Deterministic performance analysis
+        // ------------------------------------------
+
+        const analysis = analyzeFeedback({
+            studentName,
+            subject,
+            percentage,
+            weakTopics,
+            strongTopics
+        });
+
+
+        // ------------------------------------------
+        // STEP 2: AI only generates natural language
+        // ------------------------------------------
+
         const feedbackData = `
-Student Name: ${studentName}
+Student Name:
+${analysis.studentName}
 
-Subject: ${subject}
+Subject:
+${analysis.subject}
 
-Percentage: ${percentage}
+Percentage:
+${analysis.percentage}
 
-Weak Topics:
-${JSON.stringify(weakTopics, null, 2)}
+Performance Level:
+${analysis.performanceLevel}
 
-Strong Topics:
-${JSON.stringify(strongTopics, null, 2)}
+Strengths:
+${JSON.stringify(
+    analysis.strengths,
+    null,
+    2
+)}
+
+Areas for Improvement:
+${JSON.stringify(
+    analysis.areasForImprovement,
+    null,
+    2
+)}
 `;
 
-        const response = await generateResponse(
+
+        const aiResponse = await generateResponse(
             feedbackPrompt,
             feedbackData
         );
 
-        res.status(200).json({
-            success: true,
-            response,
-        });
+
+        // ------------------------------------------
+        // STEP 3: Normalize AI response
+        // ------------------------------------------
+
+        const parsedResponse =
+            parseAIResponse(aiResponse);
+
+
+        return sendSuccessResponse(
+            res,
+            {
+                analysis,
+                feedback: parsedResponse
+            }
+        );
 
     } catch (error) {
 
-        console.error("Feedback Generator Error:", error);
+        console.error(
+            "Feedback Generator Error:",
+            error
+        );
 
-        res.status(500).json({
-            success: false,
-            message: "Failed to generate feedback",
-        });
+        return sendErrorResponse(
+            res,
+            error.message ||
+                "Failed to generate feedback.",
+            400
+        );
 
     }
 
 };
 
+
 module.exports = {
-    feedbackGenerator,
+    feedbackGenerator
 };
