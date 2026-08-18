@@ -7,15 +7,37 @@ const {
     getQuestions,
     getQuestionsByTopic,
     updateQuestion,
-    deleteQuestion
+    deleteQuestion,
 } = require("../controllers/questionController");
 
 // Create Question
-router.post("/", createQuestion);
+router.post(
+    "/",
+    createQuestion
+);
 
 // Get All Questions
-router.get("/", getQuestions);
-router.get("/topic/:topicId", getQuestionsByTopic);
-router.put("/:id", updateQuestion);
-router.delete("/:id", deleteQuestion);
+router.get(
+    "/",
+    getQuestions
+);
+
+// Get Questions By Topic
+router.get(
+    "/topic/:topicId",
+    getQuestionsByTopic
+);
+
+// Update Question
+router.put(
+    "/:id",
+    updateQuestion
+);
+
+// Delete Question
+router.delete(
+    "/:id",
+    deleteQuestion
+);
+
 module.exports = router;

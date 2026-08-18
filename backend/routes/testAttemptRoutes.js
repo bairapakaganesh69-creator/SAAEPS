@@ -18,6 +18,7 @@ router.get(
 // Submit test attempt
 router.post(
     "/:testId/:attemptId/submit",
+    authMiddleware,
     submitTestAttempt
 );
 

@@ -5,14 +5,13 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
 const {
-    getResultByAttemptId,
-} = require("../controllers/resultController");
+    getDashboard,
+} = require("../controllers/dashboardController");
 
-// Get Result By Attempt ID
 router.get(
-    "/:attemptId",
+    "/",
     authMiddleware,
-    getResultByAttemptId
+    getDashboard
 );
 
 module.exports = router;
