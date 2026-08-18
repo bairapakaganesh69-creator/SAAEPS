@@ -67,7 +67,6 @@ const getSubjects = async (req, res) => {
 };
 const updateSubject = async (req, res) => {
     try {
-
         const { id } = req.params;
         const { name, description } = req.body;
 
@@ -77,11 +76,28 @@ const updateSubject = async (req, res) => {
         if (!subject) {
             return res.status(404).json({
                 success: false,
-                message: "Subject not found"
+                message: "Subject not found",
             });
         }
 
-        // Update values
+        // Check duplicate subject name
+        const existingSubject = await Subject.findOne({
+            where: {
+                name,
+            },
+        });
+
+        if (
+            existingSubject &&
+            Number(existingSubject.id) !== Number(id)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Subject already exists",
+            });
+        }
+
+        // Update Subject
         subject.name = name;
         subject.description = description;
 
@@ -90,18 +106,15 @@ const updateSubject = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Subject Updated Successfully",
-            subject
+            subject,
         });
-
     } catch (error) {
-
         console.error(error);
 
         res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Server Error",
         });
-
     }
 };
 const deleteSubject = async (req, res) => {

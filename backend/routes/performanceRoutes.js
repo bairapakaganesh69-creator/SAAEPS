@@ -5,14 +5,14 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
 const {
-    getResultByAttemptId,
-} = require("../controllers/resultController");
+    getPerformanceAnalysis,
+} = require("../controllers/performanceController");
 
-// Get Result By Attempt ID
+// Get logged-in student's performance analysis
 router.get(
-    "/:attemptId",
+    "/",
     authMiddleware,
-    getResultByAttemptId
+    getPerformanceAnalysis
 );
 
 module.exports = router;

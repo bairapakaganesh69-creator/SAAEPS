@@ -1,32 +1,61 @@
 const TestAttempt = require("../models/TestAttempt");
-const TestAttemptAnswer = require("../models/TestAttemptAnswer");
 const Test = require("../models/Test");
-const Question = require("../models/Question");
-const TestQuestion = require("../models/TestQuestion");
+
+const {
+    getAttemptResultAnswers,
+    calculateResult,
+    getTotalQuestions,
+    calculatePercentage,
+} = require("../services/result.service");
+
 // Get Result By Attempt ID
-const getResultByAttemptId = async (req, res) => {
+const getResultByAttemptId = async (
+    req,
+    res
+) => {
     try {
         const { attemptId } = req.params;
 
-        // Find attempt
-        const attempt = await TestAttempt.findByPk(attemptId);
+        // --------------------------------
+        // FIND ATTEMPT
+        // --------------------------------
+
+        const attempt =
+            await TestAttempt.findByPk(
+                attemptId
+            );
 
         if (!attempt) {
             return res.status(404).json({
                 success: false,
-                message: "Test Attempt not found",
+                message:
+                    "Test Attempt not found",
             });
         }
-        // Check whether this attempt belongs to the logged-in user
-if (Number(attempt.userId) !== Number(req.user.id)) {
-    return res.status(403).json({
-        success: false,
-        message: "Access Denied. You can only view your own test result.",
-    });
-}
 
-        // Find test
-        const test = await Test.findByPk(attempt.testId);
+        // --------------------------------
+        // CHECK OWNERSHIP
+        // --------------------------------
+
+        if (
+            Number(attempt.userId) !==
+            Number(req.user.id)
+        ) {
+            return res.status(403).json({
+                success: false,
+                message:
+                    "Access Denied. You can only view your own test result.",
+            });
+        }
+
+        // --------------------------------
+        // FIND TEST
+        // --------------------------------
+
+        const test =
+            await Test.findByPk(
+                attempt.testId
+            );
 
         if (!test) {
             return res.status(404).json({
@@ -35,104 +64,99 @@ if (Number(attempt.userId) !== Number(req.user.id)) {
             });
         }
 
-        // Get submitted answers
-        const answers = await TestAttemptAnswer.findAll({
-            where: {
-                attemptId,
-            },
-            include: [
-                {
-                    model: Question,
-                    attributes: [
-                        "id",
-                        "question",
-                        "optionA",
-                        "optionB",
-                        "optionC",
-                        "optionD",
-                        "correctAnswer",
-                        "marks",
-                        "explanation",
-                    ],
-                },
-            ],
-        });
+        // --------------------------------
+        // GET ANSWERS
+        // --------------------------------
 
-        let correctAnswers = 0;
-        let wrongAnswers = 0;
-        let score = 0;
+        const answers =
+            await getAttemptResultAnswers(
+                attemptId
+            );
 
-        const answerDetails = answers.map((answer) => {
-            const question = answer.Question;
+        // --------------------------------
+        // CALCULATE RESULT
+        // --------------------------------
 
-            const isCorrect =
-                answer.selectedAnswer === question.correctAnswer;
+        const result =
+            calculateResult(answers);
 
-            if (isCorrect) {
-                correctAnswers++;
-                score += question.marks;
-            } else {
-                wrongAnswers++;
-            }
+        // --------------------------------
+        // TOTAL QUESTIONS
+        // --------------------------------
 
-            return {
-                questionId: question.id,
-                question: question.question,
-                optionA: question.optionA,
-                optionB: question.optionB,
-                optionC: question.optionC,
-                optionD: question.optionD,
-                selectedAnswer: answer.selectedAnswer,
-                correctAnswer: question.correctAnswer,
-                marks: question.marks,
-                isCorrect,
-                explanation: question.explanation,
-            };
-        });
+        const totalQuestions =
+            await getTotalQuestions(
+                test.id
+            );
 
-        const totalQuestions = await TestQuestion.count({
-    where: {
-        testId: test.id,
-    },
-});
+        // --------------------------------
+        // PERCENTAGE
+        // --------------------------------
 
         const percentage =
-            test.totalMarks > 0
-                ? Math.round((score / test.totalMarks) * 100)
-                : 0;
+            calculatePercentage(
+                result.score,
+                test.totalMarks
+            );
 
-        res.status(200).json({
+        // --------------------------------
+        // FINAL RESPONSE
+        // --------------------------------
+
+        return res.status(200).json({
             success: true,
 
             result: {
                 attemptId: attempt.id,
+
                 testId: test.id,
+
                 testTitle: test.title,
+
                 examType: test.examType,
 
-               totalQuestions,
+                totalQuestions,
 
-                answered: answers.length,
-                correctAnswers,
-                wrongAnswers,
+                answered:
+                    answers.length,
 
-                score,
-                totalMarks: test.totalMarks,
+                correctAnswers:
+                    result.correctAnswers,
+
+                wrongAnswers:
+                    result.wrongAnswers,
+
+                score: result.score,
+
+                totalMarks:
+                    test.totalMarks,
+
                 percentage,
 
                 status: attempt.status,
-                startedAt: attempt.startedAt,
-                submittedAt: attempt.submittedAt,
+
+                startedAt:
+                    attempt.startedAt,
+
+                submittedAt:
+                    attempt.submittedAt,
             },
 
-            answers: answerDetails,
+            answers:
+                result.answerDetails,
         });
     } catch (error) {
-        console.error("Get Result Error:", error);
+        console.error(
+            "Get Result Error:",
+            error
+        );
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Failed to Get Result",
+
+            message:
+                "Failed to Get Result",
+
             error: error.message,
         });
     }

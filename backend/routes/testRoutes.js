@@ -2,6 +2,9 @@ const express = require("express");
 
 const router = express.Router();
 
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
+
 const {
     createTest,
     getAllTests,
@@ -14,33 +17,87 @@ const {
     saveAnswer,
 } = require("../controllers/testController");
 
-const {
-    submitTestAttempt,
-} = require("../controllers/testAttemptController");
+// --------------------------------
+// CREATE TEST - ADMIN
+// --------------------------------
 
-// Create Test
-router.post("/", createTest);
-// Get All Tests
-router.get("/", getAllTests);
-// Get Test By ID
-router.get("/:id", getTestById);
-// Add Question To Test
-router.post("/:testId/questions", addQuestionToTest);
-// Get Questions Of Test
-router.get("/:testId/questions", getTestQuestions);
-// Publish Test
-router.patch("/:id/publish", publishTest);
-// Start Test - Student
-router.get("/:id/start", startTest);
-// Start Test Attempt
-router.post("/:id/attempt", startTestAttempt);
-// Save Student Answer
-router.post("/:testId/attempt/:attemptId/answers", saveAnswer);
-
-// Submit Test Attempt
 router.post(
-    "/:testId/attempt/:attemptId/submit",
-    submitTestAttempt
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    createTest
+);
+
+// --------------------------------
+// GET ALL TESTS
+// --------------------------------
+
+router.get("/", getAllTests);
+
+// --------------------------------
+// GET TEST BY ID
+// --------------------------------
+
+router.get("/:id", getTestById);
+
+// --------------------------------
+// ADD QUESTION TO TEST - ADMIN
+// --------------------------------
+
+router.post(
+    "/:testId/questions",
+    authMiddleware,
+    roleMiddleware("admin"),
+    addQuestionToTest
+);
+
+// --------------------------------
+// GET QUESTIONS OF TEST
+// --------------------------------
+
+router.get(
+    "/:testId/questions",
+    getTestQuestions
+);
+
+// --------------------------------
+// PUBLISH TEST - ADMIN
+// --------------------------------
+
+router.patch(
+    "/:id/publish",
+    authMiddleware,
+    roleMiddleware("admin"),
+    publishTest
+);
+
+// --------------------------------
+// START TEST
+// --------------------------------
+
+router.get(
+    "/:id/start",
+    startTest
+);
+
+// --------------------------------
+// START TEST ATTEMPT
+// --------------------------------
+
+router.post(
+    "/:id/attempt",
+    authMiddleware,
+    startTestAttempt
+);
+
+// --------------------------------
+// SAVE STUDENT ANSWER
+// --------------------------------
+
+router.post(
+    "/:testId/attempt/:attemptId/answers",
+    authMiddleware,
+    saveAnswer
 );
 
 module.exports = router;

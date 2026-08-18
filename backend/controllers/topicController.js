@@ -114,7 +114,6 @@ const getTopicsBySubject = async (req, res) => {
 };
 const updateTopic = async (req, res) => {
     try {
-
         const { id } = req.params;
         const { name, subjectId } = req.body;
 
@@ -124,7 +123,7 @@ const updateTopic = async (req, res) => {
         if (!topic) {
             return res.status(404).json({
                 success: false,
-                message: "Topic not found"
+                message: "Topic not found",
             });
         }
 
@@ -134,7 +133,26 @@ const updateTopic = async (req, res) => {
         if (!subject) {
             return res.status(404).json({
                 success: false,
-                message: "Subject not found"
+                message: "Subject not found",
+            });
+        }
+
+        // Check Duplicate Topic
+        const existingTopic = await Topic.findOne({
+            where: {
+                name,
+                subjectId,
+            },
+        });
+
+        if (
+            existingTopic &&
+            Number(existingTopic.id) !== Number(id)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Topic already exists in this subject",
             });
         }
 
@@ -147,18 +165,15 @@ const updateTopic = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Topic Updated Successfully",
-            topic
+            topic,
         });
-
     } catch (error) {
-
         console.error(error);
 
         res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Server Error",
         });
-
     }
 };
 const deleteTopic = async (req, res) => {

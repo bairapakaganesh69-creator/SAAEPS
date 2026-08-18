@@ -1,9 +1,13 @@
 const Question = require("../models/Question");
 const Topic = require("../models/Topic");
 const Subject = require("../models/Subject");
+
+// --------------------------------
+// CREATE QUESTION
+// --------------------------------
+
 const createQuestion = async (req, res) => {
     try {
-
         const {
             question,
             optionA,
@@ -15,102 +19,146 @@ const createQuestion = async (req, res) => {
             marks,
             explanation,
             subjectId,
-            topicId
+            topicId,
         } = req.body;
 
-        const newQuestion = await Question.create({
-            question,
-            optionA,
-            optionB,
-            optionC,
-            optionD,
-            correctAnswer,
-            difficulty,
-            marks,
-            explanation,
-            subjectId,
+        // Check Subject
+        const subject = await Subject.findByPk(
+            subjectId
+        );
+
+        if (!subject) {
+            return res.status(404).json({
+                success: false,
+                message: "Subject not found",
+            });
+        }
+
+        // Check Topic
+        const topic = await Topic.findByPk(
             topicId
-        });
+        );
 
-        res.status(201).json({
+        if (!topic) {
+            return res.status(404).json({
+                success: false,
+                message: "Topic not found",
+            });
+        }
+
+        // Create Question
+        const newQuestion =
+            await Question.create({
+                question,
+                optionA,
+                optionB,
+                optionC,
+                optionD,
+                correctAnswer,
+                difficulty,
+                marks,
+                explanation,
+                subjectId,
+                topicId,
+            });
+
+        return res.status(201).json({
             success: true,
-            message: "Question Created Successfully",
-            question: newQuestion
+            message:
+                "Question Created Successfully",
+            question: newQuestion,
         });
-
     } catch (error) {
+        console.error(
+            "Create Question Error:",
+            error
+        );
 
-        console.error(error);
-
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Server Error",
         });
-
     }
 };
+
+// --------------------------------
+// GET ALL QUESTIONS
+// --------------------------------
+
 const getQuestions = async (req, res) => {
     try {
+        const questions =
+            await Question.findAll({
+                include: [
+                    {
+                        model: Subject,
+                    },
+                    {
+                        model: Topic,
+                    },
+                ],
+            });
 
-        const questions = await Question.findAll({
-            include: [
-                {
-                    model: Subject
-                },
-                {
-                    model: Topic
-                }
-            ]
-        });
-
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             count: questions.length,
-            questions
+            questions,
         });
-
     } catch (error) {
+        console.error(
+            "Get Questions Error:",
+            error
+        );
 
-        console.error(error);
-
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Server Error",
         });
-
     }
 };
-const getQuestionsByTopic = async (req, res) => {
-    try {
 
+// --------------------------------
+// GET QUESTIONS BY TOPIC
+// --------------------------------
+
+const getQuestionsByTopic = async (
+    req,
+    res
+) => {
+    try {
         const { topicId } = req.params;
 
-        const questions = await Question.findAll({
-            where: {
-                topicId
-            }
-        });
+        const questions =
+            await Question.findAll({
+                where: {
+                    topicId,
+                },
+            });
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             count: questions.length,
-            questions
+            questions,
         });
-
     } catch (error) {
+        console.error(
+            "Get Questions By Topic Error:",
+            error
+        );
 
-        console.error(error);
-
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Server Error",
         });
-
     }
 };
+
+// --------------------------------
+// UPDATE QUESTION
+// --------------------------------
+
 const updateQuestion = async (req, res) => {
     try {
-
         const { id } = req.params;
 
         const {
@@ -124,36 +172,39 @@ const updateQuestion = async (req, res) => {
             marks,
             explanation,
             subjectId,
-            topicId
+            topicId,
         } = req.body;
 
         // Find Question
-        const existingQuestion = await Question.findByPk(id);
+        const existingQuestion =
+            await Question.findByPk(id);
 
         if (!existingQuestion) {
             return res.status(404).json({
                 success: false,
-                message: "Question not found"
+                message: "Question not found",
             });
         }
 
         // Check Subject
-        const subject = await Subject.findByPk(subjectId);
+        const subject =
+            await Subject.findByPk(subjectId);
 
         if (!subject) {
             return res.status(404).json({
                 success: false,
-                message: "Subject not found"
+                message: "Subject not found",
             });
         }
 
         // Check Topic
-        const topic = await Topic.findByPk(topicId);
+        const topic =
+            await Topic.findByPk(topicId);
 
         if (!topic) {
             return res.status(404).json({
                 success: false,
-                message: "Topic not found"
+                message: "Topic not found",
             });
         }
 
@@ -169,64 +220,72 @@ const updateQuestion = async (req, res) => {
             marks,
             explanation,
             subjectId,
-            topicId
+            topicId,
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            message: "Question Updated Successfully",
-            question: existingQuestion
+            message:
+                "Question Updated Successfully",
+            question: existingQuestion,
         });
-
     } catch (error) {
+        console.error(
+            "Update Question Error:",
+            error
+        );
 
-        console.error(error);
-
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Server Error",
         });
-
     }
 };
+
+// --------------------------------
+// DELETE QUESTION
+// --------------------------------
+
 const deleteQuestion = async (req, res) => {
     try {
-
         const { id } = req.params;
 
         // Find Question
-        const question = await Question.findByPk(id);
+        const question =
+            await Question.findByPk(id);
 
         if (!question) {
             return res.status(404).json({
                 success: false,
-                message: "Question not found"
+                message: "Question not found",
             });
         }
 
         // Delete Question
         await question.destroy();
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            message: "Question Deleted Successfully"
+            message:
+                "Question Deleted Successfully",
         });
-
     } catch (error) {
+        console.error(
+            "Delete Question Error:",
+            error
+        );
 
-        console.error(error);
-
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Server Error",
         });
-
     }
 };
+
 module.exports = {
     createQuestion,
     getQuestions,
     getQuestionsByTopic,
     updateQuestion,
-    deleteQuestion
+    deleteQuestion,
 };

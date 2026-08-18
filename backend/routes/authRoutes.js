@@ -4,6 +4,7 @@ const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
+
 const {
     registerUser,
     loginUser,
@@ -15,16 +16,62 @@ const {
     resetPassword,
     adminDashboard,
 } = require("../controllers/authController");
-router.post("/register", registerUser);
 
-router.post("/login", loginUser);
-router.post("/verify-otp", verifyOTP);
-router.post("/resend-otp", resendOTP);
-router.post("/forgot-password", forgotPassword);
-router.post("/verify-reset-otp", verifyResetOTP);
-router.post("/reset-password", resetPassword);
+const {
+    registerValidation,
+} = require("../validators/authValidator");
 
-router.get("/profile", authMiddleware, getProfile);
+// Register
+router.post(
+    "/register",
+    registerValidation,
+    registerUser
+);
+
+// Login
+router.post(
+    "/login",
+    loginUser
+);
+
+// Email OTP Verification
+router.post(
+    "/verify-otp",
+    verifyOTP
+);
+
+// Resend Email OTP
+router.post(
+    "/resend-otp",
+    resendOTP
+);
+
+// Forgot Password
+router.post(
+    "/forgot-password",
+    forgotPassword
+);
+
+// Verify Reset OTP
+router.post(
+    "/verify-reset-otp",
+    verifyResetOTP
+);
+
+// Reset Password
+router.post(
+    "/reset-password",
+    resetPassword
+);
+
+// Get Profile
+router.get(
+    "/profile",
+    authMiddleware,
+    getProfile
+);
+
+// Admin Dashboard
 router.get(
     "/admin",
     authMiddleware,
