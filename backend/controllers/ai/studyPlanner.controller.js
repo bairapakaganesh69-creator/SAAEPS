@@ -1,7 +1,6 @@
-const { generateResponse } = require("../../ai/services/ai.service");
-const plannerPrompt = require("../../ai/prompts/planner.prompt");
-
-const { parseAIResponse } = require("../../utils/ai/aiJsonParser");
+const {
+    createStudyPlanner
+} = require("../../services/analysis/studyPlanner.service");
 
 const {
     sendSuccessResponse
@@ -29,50 +28,32 @@ const studyPlanner = async (req, res) => {
         } = req.body;
 
 
-        const prompt = `
-Student Name:
-${studentName}
+        const studyPlan = createStudyPlanner({
 
-Goal:
-${goal}
+            studentName,
 
-Subject:
-${subject}
+            goal,
 
-Duration:
-${durationDays} days
+            subject,
 
-Study Hours Per Day:
-${studyHoursPerDay}
+            durationDays,
 
-Weak Topics:
-${JSON.stringify(weakTopics, null, 2)}
+            studyHoursPerDay,
 
-Strong Topics:
-${JSON.stringify(strongTopics || [], null, 2)}
+            weakTopics,
 
-Previous Performance Score:
-${previousScore || "Not provided"}
+            strongTopics,
 
-Exam Date:
-${examDate || "Not provided"}
-`;
+            previousScore,
 
+            examDate
 
-        const aiResponse = await generateResponse(
-            plannerPrompt,
-            prompt
-        );
-
-
-        const parsedResponse = parseAIResponse(
-            aiResponse
-        );
+        });
 
 
         return sendSuccessResponse(
             res,
-            parsedResponse
+            studyPlan
         );
 
 

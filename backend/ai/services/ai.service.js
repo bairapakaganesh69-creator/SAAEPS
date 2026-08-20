@@ -1,11 +1,17 @@
 const ProviderManager = require("./providerManager");
 const OllamaProvider = require("../providers/ollama.provider");
+const GeminiProvider = require("../providers/gemini.provider");
 
 const providerManager = new ProviderManager();
 
 // Register Ollama as the local development provider
 providerManager.registerProvider(
     new OllamaProvider()
+);
+
+// Register Gemini as the fallback provider
+providerManager.registerProvider(
+    new GeminiProvider()
 );
 
 const generateResponse = async (
