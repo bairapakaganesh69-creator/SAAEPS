@@ -20,8 +20,11 @@ const resultRoutes = require("./routes/resultRoutes");
 const testAttemptRoutes = require("./routes/testAttemptRoutes");
 const weakTopicRoutes = require("./routes/weakTopicRoutes");
 const aiFeedbackRoutes = require("./routes/aiFeedbackRoutes");
+const aiTutorRoutes = require("./routes/aiTutorRoutes");
 const performanceRoutes = require("./routes/performanceRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const resourceRoutes = require("./routes/resourceRoutes");
 
 const app = express();
 
@@ -45,8 +48,11 @@ app.use("/api/results", resultRoutes);
 app.use("/api/test-attempts", testAttemptRoutes);
 app.use("/api/weak-topics", weakTopicRoutes);
 app.use("/api/ai-feedback", aiFeedbackRoutes);
+app.use("/api/ai-tutor", aiTutorRoutes);
 app.use("/api/performance", performanceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/resources", resourceRoutes);
 
 // --------------------------------
 // ROOT ROUTE

@@ -9,6 +9,8 @@ const {
     registerUser,
     loginUser,
     getProfile,
+    updateProfile,
+    changePassword,
     verifyOTP,
     resendOTP,
     forgotPassword,
@@ -69,6 +71,18 @@ router.get(
     "/profile",
     authMiddleware,
     getProfile
+);
+// Update Profile
+router.put(
+    "/profile",
+    authMiddleware,
+    updateProfile
+);
+// Change Password
+router.put(
+    "/change-password",
+    authMiddleware,
+    changePassword
 );
 
 // Admin Dashboard
