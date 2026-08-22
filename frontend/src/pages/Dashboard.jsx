@@ -1,3 +1,4 @@
+import {Link}from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
@@ -36,12 +37,12 @@ function Dashboard() {
                 className="bg-white rounded-lg shadow p-4 cursor-pointer
                            hover:shadow-lg transition"
               >
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-black-500">
                   Total Students
                 </p>
 
                 <p className="text-2xl font-bold text-blue-600 mt-2">
-                  520
+                  
                 </p>
 
                 <p className="text-xs text-gray-400 mt-1">
@@ -55,46 +56,48 @@ function Dashboard() {
                 className="bg-white rounded-lg shadow p-4 cursor-pointer
                            hover:shadow-lg transition"
               >
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-black-500">
                   Faculty Members
                 </p>
 
                 <p className="text-2xl font-bold text-green-600 mt-2">
-                  45
+                  
                 </p>
 
                 <p className="text-xs text-gray-400 mt-1">
                   Click to view
                 </p>
               </div>
+{/* COURSES */}
+<Link to="/courses">
+  <div className="bg-white rounded-lg shadow p-4 cursor-pointer hover:shadow-lg">
 
-              {/* COURSES */}
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-500">
-                  Courses
-                </p>
+    <p className="text-sm text-black-500">
+      Courses
+    </p>
 
-                <p className="text-2xl font-bold text-yellow-600 mt-2">
-                  18
-                </p>
+    <p className="text-2xl font-bold text-yellow-600 mt-1">
+      
+    </p>
 
-                <p className="text-xs text-gray-400 mt-1">
-                  Available
-                </p>
-              </div>
+    <p className="text-xs text-gray-400 mt-1">
+      Click to view
+    </p>
 
+  </div>
+</Link>
               {/* EXAMS */}
               <div
                 onClick={() => navigate("/exams")}
                 className="bg-white rounded-lg shadow p-4 cursor-pointer
                            hover:shadow-lg transition"
               >
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-black-500">
                   Exams
                 </p>
 
                 <p className="text-2xl font-bold text-red-600 mt-2">
-                  12
+                  
                 </p>
 
                 <p className="text-xs text-gray-400 mt-1">
@@ -107,7 +110,7 @@ function Dashboard() {
             {/* RECENT ACTIVITIES */}
             <div className="bg-white rounded-lg shadow p-5 mt-5">
 
-              <h2 className="text-lg font-semibold text-gray-800 mb-3">
+              <h2 className="text-lg font-semibold text-black-800 mb-3">
                 Recent Activities
               </h2>
 

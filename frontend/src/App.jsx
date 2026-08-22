@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
@@ -13,7 +13,6 @@ import Settings from "./pages/Settings";
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
         <Route path="/Dashboard" element={<Dashboard />} />
@@ -24,12 +23,15 @@ function App() {
         <Route path="/results" element={<Results />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
+
         <Route path="/settings" element={<Settings />} />
 
-      </Routes>
+        <Route path="*" element={<Navigate to="/Dashboard" />} />
 
+      </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+
