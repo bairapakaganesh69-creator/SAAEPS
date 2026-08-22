@@ -68,9 +68,9 @@ const getAIFeedback = async (req, res) => {
 
         // Generate feedback
         const feedback =
-            generateAIFeedback(
-                analyzedTopics
-            );
+    await generateAIFeedback(
+        analyzedTopics
+    );
 
         // Send response
         res.status(200).json({
