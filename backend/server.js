@@ -25,6 +25,7 @@ const performanceRoutes = require("./routes/performanceRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
+const aiRoutes = require("./routes/ai.routes");
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use("/api/performance", performanceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/resources", resourceRoutes);
+app.use("/api/ai", aiRoutes);
 
 // --------------------------------
 // ROOT ROUTE
