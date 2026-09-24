@@ -43,6 +43,14 @@ app.get("/", (req, res) => {
    Database Connection
 ========================== */
 
+const startServer = () => {
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
+};
+
 sequelize
     .authenticate()
     .then(() => {
@@ -51,18 +59,10 @@ sequelize
     })
     .then(() => {
         console.log("✅ Database Synchronized");
+        startServer();
     })
     .catch((err) => {
         console.error("❌ Database Connection Failed");
-        console.error(err);
+        console.error(err.message);
+        process.exit(1);
     });
-
-/* ==========================
-   Start Server
-========================== */
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});

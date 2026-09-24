@@ -1,21 +1,66 @@
 const { sendErrorResponse } = require("./aiResponseFormatter");
 
+const statusMap = {
+    AI_INVALID_JSON: 500,
+    AI_PROVIDER_ERROR: 502,
+    AI_PROVIDER_FAILED: 502,
+    AI_SERVICE_UNAVAILABLE: 503,
+    AI_TIMEOUT: 504,
+    AI_RATE_LIMIT: 429,
+    VALIDATION_ERROR: 400,
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    RATE_LIMITED: 429,
+    INTERNAL_ERROR: 500,
+};
+
+const resolveStatusCode = (error) => {
+    if (typeof error?.statusCode === "number") {
+        return error.statusCode;
+    }
+
+    if (typeof error?.status === "number") {
+        return error.status;
+    }
+
+    if (typeof error?.code === "string") {
+        const mapped = statusMap[error.code];
+        if (mapped) {
+            return mapped;
+        }
+
+        const numericCode = Number(error.code);
+        if (Number.isFinite(numericCode)) {
+            return numericCode;
+        }
+    }
+
+    return 500;
+};
+
 const handleAIError = (res, error) => {
+
+    if (res.headersSent) {
+        return res.end();
+    }
 
     console.error("\n==========================================");
     console.error("❌ AI ERROR HANDLER");
     console.error("==========================================");
-    console.error(error);
+    console.error(error?.message || error);
     console.error("==========================================\n");
 
-    const status = error.status || error.code;
+    const status = resolveStatusCode(error);
+    const message = error?.message || "An unexpected AI error occurred.";
 
     switch (status) {
 
         case 400:
             return sendErrorResponse(
                 res,
-                "Invalid AI request.",
+                message || "Invalid AI request.",
                 400
             );
 
@@ -50,8 +95,15 @@ const handleAIError = (res, error) => {
         case 500:
             return sendErrorResponse(
                 res,
-                "AI service encountered an internal error.",
+                message || "AI service encountered an internal error.",
                 500
+            );
+
+        case 502:
+            return sendErrorResponse(
+                res,
+                message || "AI provider failed to generate a response.",
+                502
             );
 
         case 503:
@@ -61,11 +113,18 @@ const handleAIError = (res, error) => {
                 503
             );
 
+        case 504:
+            return sendErrorResponse(
+                res,
+                "AI request timed out. Please try again.",
+                504
+            );
+
         default:
             return sendErrorResponse(
                 res,
-                "An unexpected AI error occurred.",
-                500
+                message || "An unexpected AI error occurred.",
+                status
             );
 
     }

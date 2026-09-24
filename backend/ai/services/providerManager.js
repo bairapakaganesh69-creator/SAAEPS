@@ -46,9 +46,25 @@ class ProviderManager {
         ];
     }
 
-    async generate(request) {
+    async generate(request = {}) {
 
-        const providerOrder = this.getProviderOrder();
+        const requestedProvider = request.provider || "auto";
+        const requestedModel =
+            request.model && request.model !== "default"
+                ? request.model
+                : null;
+
+        const configuredOrder = this.getProviderOrder();
+
+        const providerOrder =
+            requestedProvider !== "auto"
+                ? [
+                    requestedProvider,
+                    ...configuredOrder.filter(
+                        (name) => name !== requestedProvider
+                    )
+                ]
+                : configuredOrder;
 
         if (providerOrder.length === 0) {
             throw new Error("No AI providers configured");
@@ -80,6 +96,10 @@ class ProviderManager {
                     );
 
                     continue;
+                }
+
+                if (requestedModel) {
+                    provider.model = requestedModel;
                 }
 
                 console.log(

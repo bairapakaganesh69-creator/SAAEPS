@@ -1,9 +1,13 @@
 const crypto = require("crypto");
 
+const { AICache } = require("../../models");
+const aiConfig = require("../config/ai.config");
+
 class AICacheService {
 
     constructor() {
-        this.enabled = true;
+        this.enabled = aiConfig.cache.enabled;
+        this.ttl = aiConfig.cache.ttl;
     }
 
     generateKey({
@@ -13,7 +17,6 @@ class AICacheService {
         provider = "auto",
         model = "default"
     }) {
-
         const cacheInput = JSON.stringify({
             module,
             prompt,
@@ -28,24 +31,78 @@ class AICacheService {
             .digest("hex");
     }
 
-    async get() {
-        // Database implementation will be added next.
-        return null;
+    async get(cacheKey) {
+        if (!this.enabled || !cacheKey) {
+            return null;
+        }
+
+        const cached = await AICache.findOne({
+            where: {
+                cacheKey
+            }
+        });
+
+        if (!cached) {
+            return null;
+        }
+
+        if (cached.expiresAt && new Date(cached.expiresAt) <= new Date()) {
+            await cached.destroy();
+            return null;
+        }
+
+        return cached;
     }
 
-    async set() {
-        // Database implementation will be added next.
-        return null;
+    async set({
+        cacheKey,
+        module,
+        provider,
+        model,
+        prompt,
+        systemPrompt = null,
+        response,
+        usage = null,
+        latency = null
+    }) {
+        if (!this.enabled || !cacheKey) {
+            return null;
+        }
+
+        const expiresAt = new Date(
+            Date.now() + this.ttl * 1000
+        );
+
+        return AICache.upsert({
+            cacheKey,
+            module,
+            provider,
+            model,
+            prompt,
+            systemPrompt,
+            response,
+            usage,
+            latency,
+            expiresAt
+        });
     }
 
-    async delete() {
-        // Database implementation will be added next.
-        return null;
+    async delete(cacheKey) {
+        if (!cacheKey) {
+            return 0;
+        }
+
+        return AICache.destroy({
+            where: {
+                cacheKey
+            }
+        });
     }
 
     async clear() {
-        // Database implementation will be added next.
-        return null;
+        return AICache.destroy({
+            where: {}
+        });
     }
 
     isEnabled() {
