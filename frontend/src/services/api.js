@@ -1,32 +1,23 @@
-const BASE_URL = "http://localhost:5000/api";
+import axios from "axios";
 
-export async function getData(endpoint) {
-  const response = await fetch(`${BASE_URL}/${endpoint}`);
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch data");
-  }
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
 
-  return response.json();
-}
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
-export async function postData(endpoint, data) {
-  const response = await fetch(`${BASE_URL}/${endpoint}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  if (!response.ok) {
-    throw new Error("Failed to save data");
-  }
-
-  return response.json();
-}
-
-export default {
-  getData,
-  postData,
-};
+export default api;
