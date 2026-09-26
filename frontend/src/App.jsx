@@ -14,6 +14,7 @@ import Settings from "./pages/Settings";
 // Student pages
 import StudentDashboard from "./pages/StudentDashboard";
 import StudyPlanner from "./pages/StudyPlanner";
+import Performance from "./pages/Performance";
 // Authentication pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -71,7 +72,12 @@ function App() {
          path="/planner"
          element={<StudyPlanner />}
         />
-        
+
+        <Route
+        path="/student/performance"
+        element={<Performance />}
+        />
+
 <Route
   path="/student/notifications"
   element={<StudentDashboard />}

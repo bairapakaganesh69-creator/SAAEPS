@@ -27,9 +27,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
     {
   name: "Performance",
-  path: "/student-dashboard",
+  path: "/student/performance",
 },
-
    {
   name: "Notifications",
   path: "/student/notifications",
