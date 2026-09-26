@@ -13,7 +13,7 @@ import Settings from "./pages/Settings";
 
 // Student pages
 import StudentDashboard from "./pages/StudentDashboard";
-
+import StudyPlanner from "./pages/StudyPlanner";
 // Authentication pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -66,6 +66,12 @@ function App() {
           path="/student-dashboard"
           element={<StudentDashboard />}
         />
+
+        <Route
+         path="/planner"
+         element={<StudyPlanner />}
+        />
+        
 <Route
   path="/student/notifications"
   element={<StudentDashboard />}

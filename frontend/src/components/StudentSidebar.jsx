@@ -14,9 +14,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
   {
   name: "Study Planner",
-  path: "/student-dashboard",
+  path: "/planner",
 },
-
     {
   name: "Mock Tests",
   path: "/student-dashboard",
