@@ -10,6 +10,8 @@ import Results from "./pages/Results";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+
+// Student pages
 import StudentDashboard from "./pages/StudentDashboard";
 
 // Authentication pages
@@ -29,41 +31,110 @@ function App() {
         {/* ==================== AUTHENTICATION ==================== */}
 
         <Route path="/login" element={<Login />} />
+
         <Route path="/register" element={<Register />} />
-        <Route path="/verify-otp" element={<VerifyEmailOTP />} />
-        <Route path="/email-verified" element={<EmailVerified />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-reset-otp" element={<VerifyResetOTP />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
+
+        <Route
+          path="/verify-otp"
+          element={<VerifyEmailOTP />}
+        />
+
+        <Route
+          path="/email-verified"
+          element={<EmailVerified />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/verify-reset-otp"
+          element={<VerifyResetOTP />}
+        />
+
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
+        />
 
 
-        {/* ==================== ADMIN PANEL ==================== */}
+        {/* ==================== STUDENT PANEL ==================== */}
 
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/students" element={<Students />} />
-        <Route path="/faculty" element={<Faculty />} />
-        <Route path="/courses" element={<Courses />} />
-        <Route path="/exams" element={<Exams />} />
-        <Route path="/results" element={<Results />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
-{/* ==================== STUDENT ==================== */}
-
+        <Route
+          path="/student-dashboard"
+          element={<StudentDashboard />}
+        />
 <Route
-  path="/student-dashboard"
+  path="/student/notifications"
   element={<StudentDashboard />}
 />
 
+<Route
+  path="/student/profile"
+  element={<StudentDashboard />}
+/>
 
-{/* ==================== ADMIN PANEL ==================== */}
+<Route
+  path="/student/settings"
+  element={<StudentDashboard />}
+/>
 
-<Route path="/Dashboard" element={<Dashboard />} />
+        {/* ==================== ADMIN PANEL ==================== */}
+
+        <Route
+          path="/Dashboard"
+          element={<Dashboard />}
+        />
+
+        <Route
+          path="/students"
+          element={<Students />}
+        />
+
+        <Route
+          path="/faculty"
+          element={<Faculty />}
+        />
+
+        <Route
+          path="/courses"
+          element={<Courses />}
+        />
+
+        <Route
+          path="/exams"
+          element={<Exams />}
+        />
+
+        <Route
+          path="/results"
+          element={<Results />}
+        />
+
+        <Route
+          path="/notifications"
+          element={<Notifications />}
+        />
+
+        <Route
+          path="/profile"
+          element={<Profile />}
+        />
+
+        <Route
+          path="/settings"
+          element={<Settings />}
+        />
+
 
         {/* ==================== DEFAULT ==================== */}
 
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={<Navigate to="/login" replace />}
+        />
 
         <Route
           path="*"

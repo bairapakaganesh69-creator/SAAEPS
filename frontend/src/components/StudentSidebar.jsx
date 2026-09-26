@@ -8,44 +8,42 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const menuItems = [
 
     {
-      name: "Dashboard",
-      path: "/dashboard",
-    },
+  name: "Dashboard",
+  path: "/student-dashboard",
+},
+
+  {
+  name: "Study Planner",
+  path: "/student-dashboard",
+},
 
     {
-      name: "Study Planner",
-      path: "/planner",
-    },
+  name: "Mock Tests",
+  path: "/student-dashboard",
+},
+{
+  name: "Subjects",
+  path: "/student-dashboard",
+},
 
     {
-      name: "Mock Tests",
-      path: "/tests",
-    },
+  name: "Performance",
+  path: "/student-dashboard",
+},
+
+   {
+  name: "Notifications",
+  path: "/student/notifications",
+},
+    {
+  name: "Profile",
+  path: "/student/profile",
+},
 
     {
-      name: "Subjects",
-      path: "/subjects",
-    },
-
-    {
-      name: "Performance",
-      path: "/performance",
-    },
-
-    {
-      name: "Notifications",
-      path: "/notifications",
-    },
-
-    {
-      name: "Profile",
-      path: "/profile",
-    },
-
-    {
-      name: "Settings",
-      path: "/settings",
-    },
+  name: "Settings",
+  path: "/student/settings",
+},
 
   ];
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import axios from "axios";
+import api from "../services/api";
 
 import StudentSidebar from "../components/StudentSidebar";
 import Header from "../components/Header";
@@ -14,13 +14,13 @@ function Dashboard() {
   console.log("Dashboard loaded");
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   // Empty Dashboard State
   const [dashboard, setDashboard] = useState({
     user: {
-      name: "",
-      email: "",
-    },
+  name: storedUser?.fullName || "Student",
+  email: storedUser?.email || "",
+},
 
     statistics: {
       subjects: 0,
@@ -36,19 +36,44 @@ function Dashboard() {
   });
 
   useEffect(() => {
-    // Connect your backend API here
+  const loadDashboard = async () => {
+    try {
+      const res = await api.get("/dashboard");
 
-    /*
-    axios
-      .get("http://localhost:5000/api/dashboard")
-      .then((res) => {
-        setDashboard(res.data);
-      })
-      .catch((err) => {
-        console.error("Dashboard Error:", err);
-      });
-    */
-  }, []);
+      const data = res.data.dashboard;
+
+      const recentTests = (data.recentTests || []).map((test) => ({
+        name: test.testTitle,
+        score: test.percentage,
+        date: test.submittedAt
+          ? new Date(test.submittedAt).toLocaleDateString()
+          : "-",
+      }));
+
+      const progress = (data.subjectPerformance || []).map((subject) => ({
+  subject: subject.subject,
+  progress: subject.accuracy,
+}));
+      setDashboard((prev) => ({
+  ...prev,
+
+  statistics: {
+    subjects: data.subjectPerformance?.length || 0,
+    tests: data.overview?.testsAttempted || 0,
+    score: data.overview?.averagePercentage || 0,
+    hours: 0,
+  },
+
+  progress: progress,
+  tests: recentTests,
+}));
+    } catch (error) {
+      console.error("Dashboard Error:", error);
+    }
+  };
+
+  loadDashboard();
+}, []);
 
   return (
     <div className="flex min-h-screen bg-gray-100">
