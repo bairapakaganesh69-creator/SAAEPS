@@ -18,7 +18,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 },
     {
   name: "Mock Tests",
-  path: "/student-dashboard",
+  path: "/student/mock-tests",
 },
 {
   name: "Subjects",

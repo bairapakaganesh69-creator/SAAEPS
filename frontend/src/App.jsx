@@ -15,6 +15,8 @@ import Settings from "./pages/Settings";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudyPlanner from "./pages/StudyPlanner";
 import Performance from "./pages/Performance";
+import MockTests from "./pages/MockTests";
+
 // Authentication pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -77,6 +79,11 @@ function App() {
         path="/student/performance"
         element={<Performance />}
         />
+
+        <Route
+  path="/student/mock-tests"
+  element={<MockTests />}
+/>
 
 <Route
   path="/student/notifications"

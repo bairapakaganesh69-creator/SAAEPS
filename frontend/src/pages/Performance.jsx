@@ -101,7 +101,7 @@ const Performance = () => {
           </p>
 
           <h2 className="mt-2 text-xl font-bold text-gray-800">
-            {data?.strongestTopic || "Not available"}
+            {data?.strongestTopic?.topic || "Not available"}
           </h2>
         </div>
 
@@ -111,7 +111,7 @@ const Performance = () => {
           </p>
 
           <h2 className="mt-2 text-xl font-bold text-red-600">
-            {data?.weakestTopic || "Not available"}
+            {data?.weakestTopic?.topic || "Not available"}
           </h2>
         </div>
 
