@@ -1,58 +1,68 @@
+const express = require("express");
+const cors = require("cors");
 const dotenv = require("dotenv");
 
 dotenv.config();
-const express = require("express");
-const sendEmail = require("./services/emailService");
-const cors = require("cors");
-
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 
 console.log("========== SERVER STARTED ==========");
 console.log(__filename);
 
 const sequelize = require("./config/db");
+
+// Import Models
+require("./models");
+
+// Import Routes
 const authRoutes = require("./routes/authRoutes");
+const aiRoutes = require("./routes/ai.routes");
 
 console.log("✅ authRoutes loaded");
-
-const User = require("./models/User");
+console.log("✅ aiRoutes loaded");
 
 const app = express();
 
-// Middlewares
+/* ==========================
+   Middlewares
+========================== */
+
 app.use(cors());
 app.use(express.json());
 
-// Routes
+/* ==========================
+   Routes
+========================== */
+
 app.use("/api/auth", authRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
-    res.send("Welcome to SAAEPS Backend 🚀");
+    res.send("🚀 Welcome to SAAEPS Backend");
 });
 
-// Connect Database and Create Tables
+/* ==========================
+   Database Connection
+========================== */
+
+const startServer = () => {
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
+};
+
 sequelize
     .authenticate()
     .then(() => {
         console.log("✅ MySQL Connected Successfully");
-        return sequelize.sync({ alter: true });
+        return sequelize.sync();
     })
     .then(() => {
         console.log("✅ Database Synchronized");
-        sendEmail(
-    "saaeps.team@gmail.com",
-    "SAAEPS Email Test",
-    "Congratulations! 🎉 Your SAAEPS backend can send emails successfully."
-);
+        startServer();
     })
-    
     .catch((err) => {
-        console.log("❌ Database Connection Failed");
-        console.error(err);
+        console.error("❌ Database Connection Failed");
+        console.error(err.message);
+        process.exit(1);
     });
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});

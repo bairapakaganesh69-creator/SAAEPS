@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
 
 
 // Authentication Pages
@@ -49,7 +50,7 @@ return(
 
 path="/"
 
-element={<Login/>}
+element={<LandingPage/>}
 
 />
 
