@@ -29,6 +29,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   name: "Performance",
   path: "/student/performance",
 },
+{
+  name: "Feedback",
+  path: "/student/ai-feedback",
+},
+{
+  name: "ChatBot",
+  path: "/student/ai-tutor",
+},
    {
   name: "Notifications",
   path: "/student/notifications",

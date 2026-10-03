@@ -26,9 +26,13 @@ import VerifyEmailOTP from "./pages/VerifyEmailOTP";
 import VerifyResetOTP from "./pages/VerifyResetOTP";
 import ResetPassword from "./pages/ResetPassword";
 
+import AITutor from "./pages/AITutor";
+import AIFeedback from "./pages/AIFeedback";
+import { ThemeProvider } from "./context/ThemeContext";
 function App() {
   return (
-    <BrowserRouter>
+    <ThemeProvider>
+  <BrowserRouter>
       <Routes>
 
         {/* ==================== AUTHENTICATION ==================== */}
@@ -62,7 +66,15 @@ function App() {
           element={<ResetPassword />}
         />
 
+<Route
+  path="/student/ai-feedback"
+  element={<AIFeedback />}
+/>
 
+<Route
+  path="/student/ai-tutor"
+  element={<AITutor />}
+/>
         {/* ==================== STUDENT PANEL ==================== */}
 
         <Route
@@ -92,12 +104,12 @@ function App() {
 
 <Route
   path="/student/profile"
-  element={<StudentDashboard />}
+  element={<Profile />}
 />
 
 <Route
   path="/student/settings"
-  element={<StudentDashboard />}
+  element={<Settings />}
 />
 
         {/* ==================== ADMIN PANEL ==================== */}
@@ -161,7 +173,8 @@ function App() {
         />
 
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+</ThemeProvider>
   );
 }
 

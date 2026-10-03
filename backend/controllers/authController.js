@@ -240,10 +240,18 @@ const adminDashboard = async (req, res) => {
 // UPDATE PROFILE
 // --------------------------------
 
+// UPDATE PROFILE
 const updateProfile = async (req, res) => {
     try {
-        const { fullName } = req.body;
+        const {
+            fullName,
+            email,
+            department,
+            year,
+            phone,
+        } = req.body;
 
+        // Validate required fields
         if (!fullName || !fullName.trim()) {
             return res.status(400).json({
                 success: false,
@@ -251,6 +259,14 @@ const updateProfile = async (req, res) => {
             });
         }
 
+        if (!email || !email.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is required",
+            });
+        }
+
+        // Find current user
         const user = await User.findByPk(req.user.id);
 
         if (!user) {
@@ -260,7 +276,26 @@ const updateProfile = async (req, res) => {
             });
         }
 
+        // Check whether another user already uses this email
+        const existingUser = await User.findOne({
+            where: {
+                email: email.trim(),
+            },
+        });
+
+        if (existingUser && existingUser.id !== user.id) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is already registered",
+            });
+        }
+
+        // Update profile
         user.fullName = fullName.trim();
+        user.email = email.trim();
+        user.department = department?.trim() || null;
+        user.year = year?.trim() || null;
+        user.phone = phone?.trim() || null;
 
         await user.save();
 
@@ -271,6 +306,9 @@ const updateProfile = async (req, res) => {
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
+                department: user.department,
+                year: user.year,
+                phone: user.phone,
                 role: user.role,
                 isVerified: user.isVerified,
             },

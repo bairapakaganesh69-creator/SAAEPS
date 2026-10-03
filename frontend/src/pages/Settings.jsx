@@ -1,198 +1,505 @@
 import { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import {
+  Moon,
+  Sun,
+  LogOut,
+  Lock,
+  User
+} from "lucide-react";
 
-function Settings() {
+import { useTheme } from "../context/ThemeContext.jsx";
 
-  const [settings, setSettings] = useState({
-    applicationName: "SAAEPS",
-    email: "admin@saaeps.com",
-    notifications: true,
-    emailNotifications: true,
-    twoFactor: false
-  });
 
-  function handleChange(e) {
-    const { name, value, type, checked } = e.target;
+export default function Settings() {
 
-    setSettings({
-      ...settings,
-      [name]: type === "checkbox" ? checked : value
-    });
-  }
+  const navigate = useNavigate();
 
-  function handleSave(e) {
-    e.preventDefault();
+  const { darkMode, toggleTheme } = useTheme();
 
-    alert("Settings saved successfully");
-  }
+
+  const [emailNotification,setEmailNotification] = useState(true);
+  const [pushNotification,setPushNotification] = useState(false);
+  const [examReminder,setExamReminder] = useState(true);
+
+  const [language,setLanguage] = useState("English");
+
+
+
+  const logout = () => {
+
+    const confirmLogout = window.confirm(
+      "Are you sure you want to logout?"
+    );
+
+    if(confirmLogout){
+
+      localStorage.removeItem("token");
+
+      navigate("/login");
+
+    }
+
+  };
+
+
 
   return (
-    <div className="min-h-screen bg-gray-100">
 
-      {/* Sidebar */}
-      <Sidebar />
+<div
+className="
+min-h-screen p-6
+bg-gray-100
+dark:bg-gray-950
+text-gray-900
+dark:text-white
+transition-all
+duration-300
+"
+>
 
-      {/* Main Area */}
-      <div className="ml-64">
 
-        {/* Navbar */}
-        <Navbar />
+<div className="max-w-4xl mx-auto">
 
-        <main className="p-8">
 
-          {/* Page Title */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">
-            Settings
-          </h1>
+<h1 className="
+text-4xl
+font-bold
+mb-8
+text-gray-900
+dark:text-white
+">
+Settings
+</h1>
 
-          <form onSubmit={handleSave}>
 
-            {/* ================= APPLICATION SETTINGS ================= */}
 
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+{/* ACCOUNT */}
 
-              <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Application Settings
-              </h2>
+<section
+className="
+bg-white
+dark:bg-gray-800
+rounded-2xl
+p-6
+mb-6
+shadow
+"
+>
 
-              <div className="grid grid-cols-2 gap-5">
 
-                {/* Application Name */}
-                <div>
+<h2 className="
+text-2xl
+font-bold
+mb-5
+text-gray-900
+dark:text-white
+">
+Account
+</h2>
 
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Application Name
-                  </label>
 
-                  <input
-                    type="text"
-                    name="applicationName"
-                    value={settings.applicationName}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-4 py-3
-                    focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
 
-                </div>
+<button
 
-                {/* Admin Email */}
-                <div>
+onClick={() => navigate("/student/profile")}
 
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Admin Email
-                  </label>
+className="
+flex items-center gap-3
+bg-indigo-600
+hover:bg-indigo-700
+text-white
+px-5 py-3
+rounded-xl
+"
 
-                  <input
-                    type="email"
-                    name="email"
-                    value={settings.email}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-4 py-3
-                    focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+>
 
-                </div>
+<User size={20}/>
 
-              </div>
+Edit Profile
 
-              {/* System Notifications */}
-              <div className="mt-6 border-t pt-5">
+</button>
 
-                <label className="flex items-center gap-3">
 
-                  <input
-                    type="checkbox"
-                    name="notifications"
-                    checked={settings.notifications}
-                    onChange={handleChange}
-                    className="w-4 h-4"
-                  />
 
-                  <span className="text-gray-700">
-                    Enable system notifications
-                  </span>
+<button
 
-                </label>
+className="
+flex items-center gap-3
+mt-4
+bg-green-600
+hover:bg-green-700
+text-white
+px-5 py-3
+rounded-xl
+"
 
-              </div>
+>
 
-              {/* Email Notifications */}
-              <div className="mt-4">
+<Lock size={20}/>
 
-                <label className="flex items-center gap-3">
+Change Password
 
-                  <input
-                    type="checkbox"
-                    name="emailNotifications"
-                    checked={settings.emailNotifications}
-                    onChange={handleChange}
-                    className="w-4 h-4"
-                  />
+</button>
 
-                  <span className="text-gray-700">
-                    Enable email notifications
-                  </span>
 
-                </label>
+</section>
 
-              </div>
 
-            </div>
 
-            {/* ================= SECURITY SETTINGS ================= */}
 
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
 
-              <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Security Settings
-              </h2>
+{/* NOTIFICATIONS */}
 
-              <label className="flex items-center gap-3">
 
-                <input
-                  type="checkbox"
-                  name="twoFactor"
-                  checked={settings.twoFactor}
-                  onChange={handleChange}
-                  className="w-4 h-4"
-                />
+<section
 
-                <div>
+className="
+bg-white
+dark:bg-gray-800
+rounded-2xl
+p-6
+mb-6
+shadow
+"
 
-                  <p className="font-medium text-gray-800">
-                    Two-Factor Authentication
-                  </p>
+>
 
-                  <p className="text-sm text-gray-500">
-                    Add an extra layer of security to the admin account.
-                  </p>
 
-                </div>
+<h2 className="
+text-2xl
+font-bold
+mb-5
+text-gray-900
+dark:text-white
+">
+Notifications
+</h2>
 
-              </label>
 
-            </div>
 
-            {/* ================= SAVE BUTTON ================= */}
+<Toggle
 
-            <button
-              type="submit"
-              className="bg-blue-700 text-white px-7 py-3 rounded-md
-              hover:bg-blue-800"
-            >
-              Save Settings
-            </button>
+title="Email Notifications"
 
-          </form>
+value={emailNotification}
 
-        </main>
+setValue={setEmailNotification}
 
-      </div>
+/>
 
-    </div>
+
+
+<Toggle
+
+title="Push Notifications"
+
+value={pushNotification}
+
+setValue={setPushNotification}
+
+/>
+
+
+
+<Toggle
+
+title="Exam Reminder"
+
+value={examReminder}
+
+setValue={setExamReminder}
+
+/>
+
+
+</section>
+
+
+
+
+
+
+{/* APPEARANCE */}
+
+
+<section
+
+className="
+bg-white
+dark:bg-gray-800
+rounded-2xl
+p-6
+mb-6
+shadow
+"
+
+>
+
+
+<h2 className="
+text-2xl
+font-bold
+mb-5
+text-gray-900
+dark:text-white
+">
+Appearance
+</h2>
+
+
+
+<button
+
+onClick={toggleTheme}
+
+className="
+flex items-center gap-3
+bg-indigo-600
+hover:bg-indigo-700
+text-white
+px-5 py-3
+rounded-xl
+"
+
+>
+
+
+{
+darkMode ?
+
+<>
+
+<Moon size={20}/>
+Dark Theme
+
+</>
+
+:
+
+<>
+
+<Sun size={20}/>
+Light Theme
+
+</>
+
+}
+
+
+</button>
+
+
+</section>
+
+
+
+
+
+
+
+{/* LANGUAGE */}
+
+
+<section
+
+className="
+bg-white
+dark:bg-gray-800
+rounded-2xl
+p-6
+mb-6
+shadow
+"
+
+>
+
+
+<h2 className="
+text-2xl
+font-bold
+mb-5
+text-gray-900
+dark:text-white
+">
+Language
+</h2>
+
+
+
+<select
+
+value={language}
+
+onChange={(e)=>setLanguage(e.target.value)}
+
+className="
+p-3
+rounded-xl
+border
+bg-white
+dark:bg-gray-700
+text-gray-900
+dark:text-white
+"
+
+>
+
+<option>
+English
+</option>
+
+<option>
+తెలుగు (Telugu)
+</option>
+
+<option>
+हिन्दी (Hindi)
+</option>
+
+
+</select>
+
+
+</section>
+
+
+
+
+
+
+{/* LOGOUT */}
+
+
+<section
+
+className="
+bg-white
+dark:bg-gray-800
+rounded-2xl
+p-6
+shadow
+"
+
+>
+
+
+<button
+
+onClick={logout}
+
+className="
+flex items-center gap-3
+bg-red-600
+hover:bg-red-700
+text-white
+px-6
+py-3
+rounded-xl
+"
+
+>
+
+<LogOut size={20}/>
+
+Logout
+
+</button>
+
+
+</section>
+
+
+
+</div>
+
+
+</div>
+
   );
 }
 
-export default Settings;
 
+
+
+
+function Toggle({title,value,setValue}){
+
+
+return(
+
+<div className="
+flex
+justify-between
+items-center
+mb-5
+">
+
+
+<p className="
+text-lg
+text-gray-900
+dark:text-white
+">
+
+{title}
+
+</p>
+
+
+
+<button
+
+onClick={()=>setValue(!value)}
+
+className={`
+w-14
+h-7
+rounded-full
+transition
+
+${value
+?
+"bg-indigo-600"
+:
+"bg-gray-400"
+}
+
+`}
+
+>
+
+
+<div
+
+className={`
+w-6
+h-6
+bg-white
+rounded-full
+transform
+transition
+
+${value
+?
+"translate-x-7"
+:
+"translate-x-1"
+}
+
+`}
+
+/>
+
+
+</button>
+
+
+
+</div>
+
+
+)
+
+}

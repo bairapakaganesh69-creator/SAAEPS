@@ -1,78 +1,45 @@
-const { generateResponse } = require("../../ai/services/ai.service");
-const tutorPrompt = require("../../ai/prompts/tutor.prompt");
-
-const {
-    sendSuccessResponse
-} = require("../../utils/ai/aiResponseFormatter");
-
-const errorHandler = require("../../utils/ai/aiErrorHandler");
-
-const {
-    handleAIError
-} = errorHandler;
-
+const { generateAITutorResponse } = require("../../services/aiTutorService");
 
 const tutorChat = async (req, res) => {
-
     try {
+        const { prompt, subject, topic, question } = req.body;
 
-        const {
-            prompt,
-            subject,
-            topic,
-            question
-        } = req.body;
+        let userMessage = question || prompt;
 
+        if (!userMessage || !userMessage.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter a question."
+            });
+        }
 
-        let userQuery;
-
-
-        // New intelligent tutor format
-        if (question) {
-
-            userQuery = `
+        if (subject || topic) {
+            userMessage = `
 Subject: ${subject || "General"}
-
 Topic: ${topic || "General"}
 
 Student Question:
-${question}
-            `;
-
+${userMessage}
+`;
         }
 
-        // Old tutor format support
-        else {
+        const reply = await generateAITutorResponse(userMessage);
 
-            userQuery = prompt;
-
-        }
-
-
-        const response = await generateResponse(
-            tutorPrompt,
-            userQuery
-        );
-
-
-        return sendSuccessResponse(
-            res,
-            response
-        );
-
+        return res.status(200).json({
+            success: true,
+            data: {
+                response: reply
+            }
+        });
 
     } catch (error) {
+        console.error("AI Tutor Controller Error:", error);
 
-        return handleAIError(
-            res,
-            error
-        );
-
+        return res.status(500).json({
+            success: false,
+            message: "An unexpected AI error occurred"
+        });
     }
-
 };
 
-
-module.exports = {
-    tutorChat
-};
+module.exports = { tutorChat };

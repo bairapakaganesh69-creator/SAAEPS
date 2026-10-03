@@ -35,14 +35,45 @@ const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     notifications: [],
   });
 
-  useEffect(() => {
+useEffect(() => {
   const loadDashboard = async () => {
     try {
-      const res = await api.get("/dashboard");
+      const [dashboardRes, profileRes] = await Promise.all([
+        api.get("/dashboard"),
+        api.get("/auth/profile"),
+      ]);
 
-      const data = res.data.dashboard;
+      const data = dashboardRes.data?.dashboard;
+      const user = profileRes.data?.user;
 
-      const recentTests = (data.recentTests || []).map((test) => ({
+      // Latest profile from database
+      const currentUser = {
+        name: user?.fullName || "Student",
+        email: user?.email || "",
+      };
+
+      // Keep localStorage synchronized
+      if (user) {
+        const storedUser = JSON.parse(
+          localStorage.getItem("user") || "null"
+        );
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...storedUser,
+            fullName: user.fullName,
+            email: user.email,
+            department: user.department,
+            year: user.year,
+            phone: user.phone,
+            role: user.role,
+            isVerified: user.isVerified,
+          })
+        );
+      }
+
+      const recentTests = (data?.recentTests || []).map((test) => ({
         name: test.testTitle,
         score: test.percentage,
         date: test.submittedAt
@@ -50,23 +81,26 @@ const storedUser = JSON.parse(localStorage.getItem("user") || "null");
           : "-",
       }));
 
-      const progress = (data.subjectPerformance || []).map((subject) => ({
-  subject: subject.subject,
-  progress: subject.accuracy,
-}));
+      const progress = (data?.subjectPerformance || []).map((subject) => ({
+        subject: subject.subject,
+        progress: subject.accuracy,
+      }));
+
       setDashboard((prev) => ({
-  ...prev,
+        ...prev,
 
-  statistics: {
-    subjects: data.subjectPerformance?.length || 0,
-    tests: data.overview?.testsAttempted || 0,
-    score: data.overview?.averagePercentage || 0,
-    hours: 0,
-  },
+        user: currentUser,
 
-  progress: progress,
-  tests: recentTests,
-}));
+        statistics: {
+          subjects: data?.subjectPerformance?.length || 0,
+          tests: data?.overview?.testsAttempted || 0,
+          score: data?.overview?.averagePercentage || 0,
+          hours: 0,
+        },
+
+        progress: progress,
+        tests: recentTests,
+      }));
     } catch (error) {
       console.error("Dashboard Error:", error);
     }

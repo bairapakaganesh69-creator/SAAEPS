@@ -1,304 +1,344 @@
-import { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import { useEffect, useState } from "react";
+import api from "../services/api";
+import {
+  User,
+  Mail,
+  Phone,
+  GraduationCap,
+  Calendar,
+  Camera,
+  Pencil,
+} from "lucide-react";
 
-function 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Profile() {
-  const [showForm, setShowForm] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+import ChangePasswordModal from "../components/ChangePasswordModal";
 
+
+export default function Profile() {
   const [profile, setProfile] = useState({
-    name: "",
+    fullName: "",
     email: "",
+    department: "",
+    year: "",
     phone: "",
-    password: "",
   });
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-  });
+  const [backupProfile, setBackupProfile] = useState(profile);
 
-  // Handle input changes
-  function handleChange(e) {
-    setForm({
-      ...form,
+  const [isEditing, setIsEditing] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  // --------------------------------
+  // GET LOGGED-IN USER PROFILE
+  // --------------------------------
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await api.get("/auth/profile");
+
+        if (response.data?.success) {
+          const user = response.data.user;
+
+         const loadedProfile = {
+  fullName: user.fullName || "",
+  email: user.email || "",
+  department: user.department || "",
+  year: user.year || "",
+  phone: user.phone || "",
+};
+
+          setProfile(loadedProfile);
+          setBackupProfile(loadedProfile);
+        }
+      } catch (err) {
+        console.error("Profile Fetch Error:", err);
+
+        setError(
+          err.response?.data?.message ||
+            "Unable to load profile"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  // --------------------------------
+  // INPUT CHANGE
+  // --------------------------------
+
+  const handleChange = (e) => {
+    setProfile({
+      ...profile,
       [e.target.name]: e.target.value,
     });
-  }
+  };
 
-  // Open Edit Profile
-  function handleEdit() {
-    setForm({
-      name: profile.name,
+  // --------------------------------
+  // START EDITING
+  // --------------------------------
+
+  const handleEdit = () => {
+    setBackupProfile(profile);
+    setError("");
+    setIsEditing(true);
+  };
+
+  // --------------------------------
+  // SAVE PROFILE
+  // --------------------------------
+
+ const handleSave = async () => {
+  try {
+    setSaving(true);
+    setError("");
+
+    const response = await api.put("/auth/profile", {
+      fullName: profile.fullName,
       email: profile.email,
+      department: profile.department,
+      year: profile.year,
       phone: profile.phone,
-      password: profile.password,
     });
 
-    setShowForm(true);
-  }
+    if (response.data?.success) {
+      const updatedUser = response.data.user;
 
-  // Save Profile
-  function handleSubmit(e) {
-    e.preventDefault();
+      const updatedProfile = {
+        fullName: updatedUser.fullName || "",
+        email: updatedUser.email || "",
+        department: updatedUser.department || "",
+        year: updatedUser.year || "",
+        phone: updatedUser.phone || "",
+      };
 
-    if (
-      !form.name.trim() ||
-      !form.email.trim() ||
-      !form.phone.trim() ||
-      !form.password.trim()
-    ) {
-      alert("Please fill all fields");
-      return;
+      setProfile(updatedProfile);
+      setBackupProfile(updatedProfile);
+
+      // Keep localStorage synchronized
+      const storedUser = JSON.parse(
+        localStorage.getItem("user") || "null"
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...storedUser,
+          ...updatedProfile,
+          role: updatedUser.role,
+          isVerified: updatedUser.isVerified,
+        })
+      );
+
+      setIsEditing(false);
+
+      alert("Profile Updated Successfully");
     }
+  } catch (error) {
+    console.error("Profile Update Error:", error);
 
-    setProfile({
-      name: form.name.trim(),
-      email: form.email.trim(),
-      phone: form.phone.trim(),
-      password: form.password,
-    });
-
-    setShowForm(false);
-    setShowPassword(false);
-
-    alert("Profile updated successfully");
+    setError(
+      error.response?.data?.message ||
+        "Failed to update profile"
+    );
+  } finally {
+    setSaving(false);
   }
+};
+  // --------------------------------
+  // CANCEL EDITING
+  // --------------------------------
 
-  // Exit
-  function handleExit() {
-    setShowForm(false);
-    setShowPassword(false);
+  const handleCancel = () => {
+    setProfile(backupProfile);
+    setError("");
+    setIsEditing(false);
+  };
 
-    setForm({
-      name: profile.name,
-      email: profile.email,
-      phone: profile.phone,
-      password: profile.password,
-    });
+  // --------------------------------
+  // LOADING
+  // --------------------------------
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-700 via-blue-600 to-cyan-500">
+        <div className="bg-white/20 backdrop-blur-xl px-8 py-6 rounded-2xl text-white text-lg font-semibold">
+          Loading Profile...
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-r from-indigo-700 via-blue-600 to-cyan-500 py-10 px-4">
 
-      {/* Sidebar */}
-      <Sidebar />
+      <div className="max-w-5xl mx-auto bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 p-8">
 
-      {/* Main Area */}
-      <div className="ml-64">
+        {/* Header */}
 
-        {/* Navbar */}
-        <Navbar />
+        <div className="flex justify-between items-center mb-8">
 
-        <main className="p-8">
+          <div>
+            <h1 className="text-4xl font-bold text-white">
+              My Profile
+            </h1>
 
-          {/* Page Title */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">
-            Profile
-          </h1>
+            <p className="text-blue-100 mt-2">
+              Manage your personal information
+            </p>
+          </div>
 
-          {/* Profile Card */}
-          <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl">
+          <button
+            onClick={handleEdit}
+            disabled={isEditing}
+            className="flex items-center gap-2 bg-white text-indigo-700 px-5 py-3 rounded-xl font-semibold hover:bg-gray-100 disabled:opacity-50"
+          >
+            <Pencil size={18} />
+            Edit Profile
+          </button>
 
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+        </div>
 
-              <h2 className="text-xl font-bold text-gray-800">
-                Admin Profile
-              </h2>
+        {/* Error */}
 
-              {!showForm && (
-                <button
-                  onClick={handleEdit}
-                  className="bg-blue-700 text-white px-5 py-2 rounded-md hover:bg-blue-800"
-                >
-                  Edit Profile
-                </button>
-              )}
+        {error && (
+          <div className="mb-6 bg-red-500/90 text-white px-5 py-3 rounded-xl">
+            {error}
+          </div>
+        )}
 
-            </div>
+        {/* Profile Image */}
 
-            {/* Edit Form */}
-            {showForm ? (
+        <div className="flex flex-col items-center">
 
-              <form onSubmit={handleSubmit}>
+          <div className="relative">
 
-                <div className="grid grid-cols-2 gap-5">
+            <img
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                profile.fullName || "Student"
+              )}&background=ffffff&color=4f46e5&size=200`}
+              alt="profile"
+              className="w-40 h-40 rounded-full border-4 border-white shadow-lg"
+            />
 
-                  {/* Name */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Name
-                    </label>
-
-                    <input
-                      name="name"
-                      value={form.name}
-                      onChange={handleChange}
-                      placeholder="Enter name"
-                      className="w-full border border-gray-300 rounded-md px-4 py-3
-                                 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email
-                    </label>
-
-                    <input
-                      name="email"
-                      type="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="Enter email"
-                      className="w-full border border-gray-300 rounded-md px-4 py-3
-                                 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone
-                    </label>
-
-                    <input
-                      name="phone"
-                      value={form.phone}
-                      onChange={handleChange}
-                      placeholder="Enter phone number"
-                      className="w-full border border-gray-300 rounded-md px-4 py-3
-                                 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Password
-                    </label>
-
-                    <div className="relative">
-
-                      <input
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        value={form.password}
-                        onChange={handleChange}
-                        placeholder="Enter password"
-                        className="w-full border border-gray-300 rounded-md px-4 py-3 pr-12
-                                   focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-
-                      {/* Eye Button */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        className="absolute right-3 top-1/2 -translate-y-1/2
-                                   text-gray-600 hover:text-blue-600 text-xl"
-                        title={
-                          showPassword
-                            ? "Hide password"
-                            : "Show password"
-                        }
-                      >
-                        {showPassword ? "👁️" : "👁️"}
-                      </button>
-
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* Buttons */}
-                <div className="mt-6 flex gap-3">
-
-                  {/* Save */}
-                  <button
-                    type="submit"
-                    className="bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800"
-                  >
-                    Save Profile
-                  </button>
-
-                  {/* Exit */}
-                  <button
-                    type="button"
-                    onClick={handleExit}
-                    className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400"
-                  >
-                    Exit
-                  </button>
-
-                </div>
-
-              </form>
-
-            ) : (
-
-              /* Profile Display */
-              <div className="grid grid-cols-2 gap-5">
-
-                {/* Name */}
-                <div className="border rounded-md p-4">
-                  <p className="text-sm text-gray-500">
-                    Name
-                  </p>
-
-                  <p className="font-medium text-gray-800 mt-1">
-                    {profile.name || "Not added"}
-                  </p>
-                </div>
-
-                {/* Email */}
-                <div className="border rounded-md p-4">
-                  <p className="text-sm text-gray-500">
-                    Email
-                  </p>
-
-                  <p className="font-medium text-gray-800 mt-1">
-                    {profile.email || "Not added"}
-                  </p>
-                </div>
-
-                {/* Phone */}
-                <div className="border rounded-md p-4">
-                  <p className="text-sm text-gray-500">
-                    Phone
-                  </p>
-
-                  <p className="font-medium text-gray-800 mt-1">
-                    {profile.phone || "Not added"}
-                  </p>
-                </div>
-
-                {/* Password */}
-                <div className="border rounded-md p-4">
-                  <p className="text-sm text-gray-500">
-                    Password
-                  </p>
-
-                  <p className="font-medium text-gray-800 mt-1">
-                    {profile.password
-                      ? "••••••••"
-                      : "Not added"}
-                  </p>
-                </div>
-
-              </div>
-
-            )}
+            <button
+              type="button"
+              className="absolute bottom-2 right-2 bg-indigo-600 text-white p-3 rounded-full"
+            >
+              <Camera size={18} />
+            </button>
 
           </div>
 
-        </main>
+          <h2 className="text-2xl text-white font-bold mt-5">
+            {profile.fullName || "Student"}
+          </h2>
+
+          <p className="text-blue-100">
+            Student
+          </p>
+
+        </div>
+
+        {/* Profile Fields */}
+
+        <div className="grid md:grid-cols-2 gap-6 mt-10">
+
+          <InputField
+            icon={<User size={20} />}
+            label="Full Name"
+            name="fullName"
+            value={profile.fullName}
+            disabled={!isEditing}
+            onChange={handleChange}
+          />
+
+          <InputField
+            icon={<Mail size={20} />}
+            label="Email"
+            name="email"
+            value={profile.email}
+              disabled={!isEditing}
+            onChange={handleChange}
+          />
+
+          <InputField
+            icon={<GraduationCap size={20} />}
+            label="Department"
+            name="department"
+            value={profile.department}
+            disabled={!isEditing}
+            onChange={handleChange}
+          />
+
+          <InputField
+            icon={<Calendar size={20} />}
+            label="Year"
+            name="year"
+            value={profile.year}
+            disabled={!isEditing}
+            onChange={handleChange}
+          />
+
+          <div className="md:col-span-2">
+
+            <InputField
+              icon={<Phone size={20} />}
+              label="Phone Number"
+              name="phone"
+              value={profile.phone}
+              disabled={!isEditing}
+              onChange={handleChange}
+            />
+
+          </div>
+
+        </div>
+
+        {/* Buttons */}
+
+        <div className="flex justify-center gap-4 mt-10">
+
+          <button
+            onClick={handleSave}
+            disabled={!isEditing || saving}
+            className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-6 py-3 rounded-xl"
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+
+          <button
+            onClick={handleCancel}
+            disabled={!isEditing || saving}
+            className="bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white px-6 py-3 rounded-xl"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={() => setShowPasswordModal(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl"
+          >
+            Change Password
+          </button>
+
+        </div>
+
+        {/* Password Component */}
+
+        <ChangePasswordModal
+          open={showPasswordModal}
+          onClose={() => setShowPasswordModal(false)}
+        />
 
       </div>
 
@@ -306,4 +346,47 @@ function
   );
 }
 
-export default Profile;
+
+// --------------------------------
+// INPUT FIELD COMPONENT
+// --------------------------------
+
+function InputField({
+  icon,
+  label,
+  name,
+  value,
+  onChange,
+  disabled,
+}) {
+  return (
+    <div>
+
+      <label className="text-white block mb-2">
+        {label}
+      </label>
+
+      <div className="relative">
+
+        <div className="absolute left-4 top-4 text-gray-500">
+          {icon}
+        </div>
+
+        <input
+          type="text"
+          name={name}
+          value={value}
+          disabled={disabled}
+          onChange={onChange}
+          className={`w-full pl-12 py-3 rounded-xl outline-none text-gray-800 ${
+            disabled
+              ? "bg-gray-200 cursor-not-allowed"
+              : "bg-white"
+          }`}
+        />
+
+      </div>
+
+    </div>
+  );
+}
