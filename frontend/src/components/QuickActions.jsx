@@ -6,27 +6,27 @@ function QuickActions({ actions }) {
 
 
   const defaultActions = [
-    {
-      title: "Take Mock Test",
-      path: "/tests",
-      color: "bg-blue-600",
-    },
-    {
-      title: "Study Planner",
-      path: "/planner",
-      color: "bg-green-600",
-    },
-    {
-      title: "View Performance",
-      path: "/performance",
-      color: "bg-purple-600",
-    },
-    {
-      title: "Update Profile",
-      path: "/profile",
-      color: "bg-orange-500",
-    },
-  ];
+  {
+    title: "Take Mock Test",
+    path: "/student/mock-tests",
+    color: "bg-blue-600",
+  },
+  {
+    title: "Study Planner",
+    path: "/planner",
+    color: "bg-green-600",
+  },
+  {
+    title: "View Performance",
+    path: "/student/performance",
+    color: "bg-purple-600",
+  },
+  {
+    title: "Update Profile",
+    path: "/student/profile",
+    color: "bg-orange-500",
+  },
+];
 
 
   const quickActions = actions || defaultActions;
