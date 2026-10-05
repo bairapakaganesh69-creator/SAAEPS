@@ -26,14 +26,14 @@ export default function AIFeedback() {
       if (response.data?.success) {
         setFeedback(response.data.feedback);
       } else {
-        setError("Unable to generate AI feedback.");
+        setError("Unable to generate feedback.");
       }
     } catch (err) {
       console.error("AI Feedback Error:", err);
 
       setError(
         err.response?.data?.message ||
-          "Failed to load AI feedback."
+          "Failed to load feedback."
       );
     } finally {
       setLoading(false);
@@ -49,7 +49,7 @@ export default function AIFeedback() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-700 via-blue-600 to-cyan-500">
         <div className="bg-white/20 backdrop-blur-xl rounded-2xl px-8 py-6 text-white text-lg font-semibold flex items-center gap-3">
           <RefreshCw className="animate-spin" size={22} />
-          Generating AI Feedback...
+          Generating Feedback...
         </div>
       </div>
     );
@@ -65,7 +65,7 @@ export default function AIFeedback() {
           />
 
           <h2 className="text-xl font-bold text-gray-800 mb-2">
-            Unable to Load AI Feedback
+            Unable to Load Feedback
           </h2>
 
           <p className="text-gray-500 mb-5">
@@ -99,7 +99,7 @@ export default function AIFeedback() {
               </div>
 
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                AI Performance Feedback
+                Performance Feedback
               </h1>
             </div>
 
@@ -129,7 +129,7 @@ export default function AIFeedback() {
 
           <div>
             <h2 className="text-xl font-bold mb-2">
-              AI Insight
+              Feedback Insight
             </h2>
 
             <p className="text-white/90 leading-relaxed">
@@ -172,7 +172,7 @@ export default function AIFeedback() {
 
       {/* Recommendations */}
       <Section
-        title="AI Recommendations"
+        title="Recommendations"
         icon={<Lightbulb size={22} />}
       >
         {feedback?.recommendations?.length > 0 ? (

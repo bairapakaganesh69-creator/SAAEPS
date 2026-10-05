@@ -17,7 +17,7 @@ export default function AITutor() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      text: "Hello! I'm your SAAEPS AI Tutor. Ask me any question about your exam subjects and I'll help you understand it.",
+      text: "Hello! I'm your SAAEPS Chatbot. Ask me any question about your exam subjects and I'll help you understand it.",
     },
   ]);
 
@@ -86,7 +86,7 @@ export default function AITutor() {
     setMessages([
       {
         role: "assistant",
-        text: "Hello! I'm your SAAEPS AI Tutor. Ask me any question about your exam subjects and I'll help you understand it.",
+        text: "Hello! I'm your SAAEPS Chatbot. Ask me any question about your exam subjects and I'll help you understand it.",
       },
     ]);
   };
@@ -112,7 +112,7 @@ export default function AITutor() {
                 </h1>
 
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Your personal exam preparation assistant
+                  Your personal exam preparation chatbot
                 </p>
               </div>
 
@@ -238,7 +238,7 @@ export default function AITutor() {
                   />
 
                   <span>
-                    AI Tutor is thinking...
+                    Chatbot is thinking...
                   </span>
                 </div>
 
