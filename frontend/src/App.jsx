@@ -8,6 +8,8 @@ import Courses from "./pages/Courses";
 import Exams from "./pages/Exams";
 import Results from "./pages/Results";
 import Notifications from "./pages/Notifications";
+import StudentNotifications from "./components/StudentNotifications";
+import { NotificationProvider } from "./context/NotificationContext";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
@@ -32,7 +34,8 @@ import { ThemeProvider } from "./context/ThemeContext";
 function App() {
   return (
     <ThemeProvider>
-  <BrowserRouter>
+  <NotificationProvider>
+    <BrowserRouter>
       <Routes>
 
         {/* ==================== AUTHENTICATION ==================== */}
@@ -99,9 +102,8 @@ function App() {
 
 <Route
   path="/student/notifications"
-  element={<StudentDashboard />}
+  element={<StudentNotifications />}
 />
-
 <Route
   path="/student/profile"
   element={<Profile />}
@@ -172,9 +174,10 @@ function App() {
           element={<Navigate to="/login" replace />}
         />
 
-      </Routes>
+                  </Routes>
       </BrowserRouter>
-</ThemeProvider>
+    </NotificationProvider>
+  </ThemeProvider>
   );
 }
 
