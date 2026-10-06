@@ -230,10 +230,27 @@ const getProfile = async (req, res) => {
 // --------------------------------
 
 const adminDashboard = async (req, res) => {
-    return res.status(200).json({
-        success: true,
-        message: "Welcome Admin 👑",
-    });
+    try {
+        const totalStudents = await User.count({
+            where: {
+                role: "student",
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Welcome Admin 👑",
+            totalStudents,
+        });
+
+    } catch (error) {
+        console.error("Admin Dashboard Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server Error",
+        });
+    }
 };
 
 // --------------------------------
