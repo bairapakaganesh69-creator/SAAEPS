@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-const authMiddleware = require("../middleware/authMiddleware");
 // ==========================
 // Controllers
 // ==========================
@@ -32,7 +31,6 @@ const validateRequest = require("../middleware/validationMiddleware");
 // ==========================
 router.post(
     "/tutor",
-    authMiddleware,
     tutorValidation,
     validateRequest,
     tutorChat
@@ -43,7 +41,6 @@ router.post(
 // ==========================
 router.post(
     "/weak-topics",
-    authMiddleware,
     weakTopicValidation,
     validateRequest,
     weakTopicAnalyzer
@@ -54,7 +51,6 @@ router.post(
 // ==========================
 router.post(
     "/feedback",
-    authMiddleware,
     feedbackValidation,
     validateRequest,
     feedbackGenerator
@@ -65,7 +61,6 @@ router.post(
 // ==========================
 router.post(
     "/study-plan",
-    authMiddleware,
     studyPlannerValidation,
     validateRequest,
     studyPlanner
@@ -76,7 +71,6 @@ router.post(
 // ==========================
 router.post(
     "/performance-feedback",
-    authMiddleware,
     performanceFeedbackValidation,
     validateRequest,
     performanceFeedback

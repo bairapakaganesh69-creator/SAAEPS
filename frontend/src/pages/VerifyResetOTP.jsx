@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {useLocation,useNavigate} from "react-router-dom";
 import {GraduationCap} from "lucide-react";
-import {verifyResetOtp} from "../services/authservice";
+import {verifyResetOtp} from "../services/authService";
 
 
 export default function VerifyResetOTP(){

@@ -1,184 +1,308 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
 
-// Admin pages
-import Dashboard from "./pages/Dashboard";
-import Students from "./pages/Students";
-import Faculty from "./pages/Faculty";
-import Courses from "./pages/Courses";
-import Exams from "./pages/Exams";
-import Results from "./pages/Results";
-import Notifications from "./pages/Notifications";
-import StudentNotifications from "./components/StudentNotifications";
-import { NotificationProvider } from "./context/NotificationContext";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
 
-// Student pages
-import StudentDashboard from "./pages/StudentDashboard";
-import StudyPlanner from "./pages/StudyPlanner";
-import Performance from "./pages/Performance";
-import MockTests from "./pages/MockTests";
-
-// Authentication pages
+// Authentication Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import EmailVerified from "./pages/EmailVerified";
 import ForgotPassword from "./pages/ForgotPassword";
+
 import VerifyEmailOTP from "./pages/VerifyEmailOTP";
 import VerifyResetOTP from "./pages/VerifyResetOTP";
 import ResetPassword from "./pages/ResetPassword";
 
-import AITutor from "./pages/AITutor";
-import AIFeedback from "./pages/AIFeedback";
-import { ThemeProvider } from "./context/ThemeContext";
-function App() {
-  return (
-    <ThemeProvider>
-  <NotificationProvider>
-    <BrowserRouter>
-      <Routes>
 
-        {/* ==================== AUTHENTICATION ==================== */}
+// Protected Pages
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import StudyPlanner from "./pages/StudyPlanner";
+import MockTests from "./pages/MockTests";
+import Subjects from "./pages/Subjects";
+import Performance from "./pages/Performance";
+import NotificationsPage from "./pages/NotificationsPage";
 
-        <Route path="/login" element={<Login />} />
 
-        <Route path="/register" element={<Register />} />
+// Protection
+import ProtectedRoute from "./components/ProtectedRoute";
 
-        <Route
-          path="/verify-otp"
-          element={<VerifyEmailOTP />}
-        />
 
-        <Route
-          path="/email-verified"
-          element={<EmailVerified />}
-        />
 
-        <Route
-          path="/forgot-password"
-          element={<ForgotPassword />}
-        />
+function App(){
 
-        <Route
-          path="/verify-reset-otp"
-          element={<VerifyResetOTP />}
-        />
 
-        <Route
-          path="/reset-password"
-          element={<ResetPassword />}
-        />
+return(
+
+<BrowserRouter>
+
+
+<Routes>
+
+
+
+{/* =====================
+    AUTHENTICATION ROUTES
+===================== */}
+
+
 
 <Route
-  path="/student/ai-feedback"
-  element={<AIFeedback />}
+
+path="/"
+
+element={<LandingPage/>}
+
 />
+
+
 
 <Route
-  path="/student/ai-tutor"
-  element={<AITutor />}
+
+path="/login"
+
+element={<Login/>}
+
 />
-        {/* ==================== STUDENT PANEL ==================== */}
 
-        <Route
-          path="/student-dashboard"
-          element={<StudentDashboard />}
-        />
 
-        <Route
-         path="/planner"
-         element={<StudyPlanner />}
-        />
-
-        <Route
-        path="/student/performance"
-        element={<Performance />}
-        />
-
-        <Route
-  path="/student/mock-tests"
-  element={<MockTests />}
-/>
 
 <Route
-  path="/student/notifications"
-  element={<StudentNotifications />}
+
+path="/register"
+
+element={<Register/>}
+
 />
+
+
+
+{/* Register OTP Verification */}
+
 <Route
-  path="/student/profile"
-  element={<Profile />}
+
+path="/verify-otp"
+
+element={<VerifyEmailOTP/>}
+
 />
+
+
+
+{/* Forgot Password */}
 
 <Route
-  path="/student/settings"
-  element={<Settings />}
+
+path="/forgot-password"
+
+element={<ForgotPassword/>}
+
 />
 
-        {/* ==================== ADMIN PANEL ==================== */}
-
-        <Route
-          path="/Dashboard"
-          element={<Dashboard />}
-        />
-
-        <Route
-          path="/students"
-          element={<Students />}
-        />
-
-        <Route
-          path="/faculty"
-          element={<Faculty />}
-        />
-
-        <Route
-          path="/courses"
-          element={<Courses />}
-        />
-
-        <Route
-          path="/exams"
-          element={<Exams />}
-        />
-
-        <Route
-          path="/results"
-          element={<Results />}
-        />
-
-        <Route
-          path="/notifications"
-          element={<Notifications />}
-        />
-
-        <Route
-          path="/profile"
-          element={<Profile />}
-        />
-
-        <Route
-          path="/settings"
-          element={<Settings />}
-        />
 
 
-        {/* ==================== DEFAULT ==================== */}
+{/* Password Reset OTP */}
 
-        <Route
-          path="/"
-          element={<Navigate to="/login" replace />}
-        />
+<Route
 
-        <Route
-          path="*"
-          element={<Navigate to="/login" replace />}
-        />
+path="/verify-reset-otp"
 
-                  </Routes>
-      </BrowserRouter>
-    </NotificationProvider>
-  </ThemeProvider>
-  );
+element={<VerifyResetOTP/>}
+
+/>
+
+
+
+{/* Create New Password */}
+
+<Route
+
+path="/reset-password"
+
+element={<ResetPassword/>}
+
+/>
+
+
+
+
+
+
+{/* =====================
+    PROTECTED ROUTES
+===================== */}
+
+
+
+
+<Route
+
+path="/dashboard"
+
+element={
+
+<ProtectedRoute>
+
+<Dashboard/>
+
+</ProtectedRoute>
+
 }
+
+/>
+
+
+
+
+
+<Route
+
+path="/profile"
+
+element={
+
+<ProtectedRoute>
+
+<Profile/>
+
+</ProtectedRoute>
+
+}
+
+/>
+
+
+
+
+
+<Route
+
+path="/settings"
+
+element={
+
+<ProtectedRoute>
+
+<Settings/>
+
+</ProtectedRoute>
+
+}
+
+/>
+
+
+
+
+
+<Route
+
+path="/planner"
+
+element={
+
+<ProtectedRoute>
+
+<StudyPlanner/>
+
+</ProtectedRoute>
+
+}
+
+/>
+
+
+
+
+
+<Route
+
+path="/tests"
+
+element={
+
+<ProtectedRoute>
+
+<MockTests/>
+
+</ProtectedRoute>
+
+}
+
+/>
+
+
+
+
+
+<Route
+
+path="/subjects"
+
+element={
+
+<ProtectedRoute>
+
+<Subjects/>
+
+</ProtectedRoute>
+
+}
+
+/>
+
+
+
+
+
+<Route
+
+path="/performance"
+
+element={
+
+<ProtectedRoute>
+
+<Performance/>
+
+</ProtectedRoute>
+
+}
+
+/>
+
+
+
+
+
+<Route
+
+path="/notifications"
+
+element={
+
+<ProtectedRoute>
+
+<NotificationsPage/>
+
+</ProtectedRoute>
+
+}
+
+/>
+
+
+
+
+</Routes>
+
+
+</BrowserRouter>
+
+
+);
+
+
+}
+
 
 export default App;

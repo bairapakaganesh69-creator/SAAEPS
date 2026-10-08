@@ -1,58 +1,163 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
-function Sidebar() {
-  return (
-    <div className="w-64 min-h-screen bg-blue-700 text-white fixed left-0 top-0">
 
-      <div className="px-6 py-6">
-        <h2 className="text-xl font-bold">
-          SAAEPS Admin
-        </h2>
+function Sidebar({ sidebarOpen, setSidebarOpen }) {
+
+
+  const menuItems = [
+
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+    },
+
+    {
+      name: "Study Planner",
+      path: "/planner",
+    },
+
+    {
+      name: "Mock Tests",
+      path: "/tests",
+    },
+
+    {
+      name: "Subjects",
+      path: "/subjects",
+    },
+
+    {
+      name: "Performance",
+      path: "/performance",
+    },
+
+    {
+      name: "Notifications",
+      path: "/notifications",
+    },
+
+    {
+      name: "Profile",
+      path: "/profile",
+    },
+
+    {
+      name: "Settings",
+      path: "/settings",
+    },
+
+  ];
+
+
+
+  return (
+
+    <aside
+      className={`
+        fixed
+        md:static
+        top-0
+        left-0
+        z-40
+        w-64
+        min-h-screen
+        bg-blue-900
+        text-white
+        p-6
+        transition-transform
+        duration-300
+
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+
+      `}
+    >
+
+
+
+      <div className="mb-10">
+
+
+        <h1 className="text-2xl font-bold">
+          SAAEPS
+        </h1>
+
+
+        <p className="text-blue-200 text-sm">
+          Smart Academic Assistant
+        </p>
+
+
       </div>
 
-      <nav className="mt-4">
 
-        <Link to="/Dashboard" className="block px-7 py-4 hover:bg-blue-800">
-          Dashboard
-        </Link>
 
-        <Link to="/students" className="block px-7 py-4 hover:bg-blue-800">
-          Students
-        </Link>
 
-        <Link to="/faculty" className="block px-7 py-4 hover:bg-blue-800">
-          Faculty
-        </Link>
 
-        <Link to="/courses" className="block px-7 py-4 hover:bg-blue-800">
-          Courses
-        </Link>
+      <nav>
 
-        <Link to="/exams" className="block px-7 py-4 hover:bg-blue-800">
-          Exams
-        </Link>
 
-        <Link to="/results" className="block px-7 py-4 hover:bg-blue-800">
-          Results
-        </Link>
+        <ul className="space-y-3">
 
-        <Link to="/notifications" className="block px-7 py-4 hover:bg-blue-800">
-          Notifications
-        </Link>
 
-        <Link to="/profile" className="block px-7 py-4 hover:bg-blue-800">
-          Profile
-        </Link>
+          {
+            menuItems.map((item)=>(
 
-        <Link to="/settings" className="block px-7 py-4 hover:bg-blue-800">
-          Settings
-        </Link>
+
+              <li key={item.name}>
+
+
+                <Link
+
+                  to={item.path}
+
+                  onClick={() => setSidebarOpen && setSidebarOpen(false)}
+
+                  className="
+                    block
+                    p-3
+                    rounded-lg
+                    hover:bg-blue-700
+                    transition
+                  "
+
+                >
+
+                  {item.name}
+
+                </Link>
+
+
+              </li>
+
+
+            ))
+          }
+
+
+        </ul>
+
 
       </nav>
 
-    </div>
+
+
+
+
+      <div className="absolute bottom-6 text-blue-300 text-sm">
+
+        © 2026 SAAEPS
+
+      </div>
+
+
+
+    </aside>
+
+
   );
+
 }
 
-export default Sidebar;
 
+export default Sidebar;

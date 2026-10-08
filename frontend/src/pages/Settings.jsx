@@ -102,7 +102,7 @@ Account
 
 <button
 
-onClick={() => navigate("/student/profile")}
+onClick={()=>navigate("/profile")}
 
 className="
 flex items-center gap-3

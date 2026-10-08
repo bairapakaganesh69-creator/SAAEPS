@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, GraduationCap } from "lucide-react";
-import { register } from "../services/authservice";
+import { register } from "../services/authService";
 
 
 export default function Register() {

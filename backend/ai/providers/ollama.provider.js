@@ -16,7 +16,7 @@ class OllamaProvider extends BaseAIProvider {
         this.model =
             config.model ||
             process.env.OLLAMA_MODEL ||
-            "qwen3:1.7b";
+            "saaeps-assistant:latest";
 
         this.timeout =
             config.timeout ||

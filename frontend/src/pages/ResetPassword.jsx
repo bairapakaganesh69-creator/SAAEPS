@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {useLocation,useNavigate} from "react-router-dom";
-import {resetPassword} from "../services/authservice";
+import {resetPassword} from "../services/authService";
 
 
 export default function ResetPassword(){
@@ -55,8 +55,13 @@ setError("");
 
 
 await resetPassword({
-    email,
-    newPassword: password
+
+email,
+
+otp,
+
+password
+
 });
 
 

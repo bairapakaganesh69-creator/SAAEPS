@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-const Topic = sequelize.define(
-    "Topic",
+const Exam = sequelize.define(
+    "Exam",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -15,13 +15,19 @@ const Topic = sequelize.define(
             allowNull: false,
         },
 
+        code: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+        },
+
         description: {
             type: DataTypes.TEXT,
             allowNull: true,
         },
 
-        subjectId: {
-            type: DataTypes.INTEGER,
+        examType: {
+            type: DataTypes.ENUM("semester", "ecet", "polycet"),
             allowNull: false,
         },
 
@@ -32,8 +38,8 @@ const Topic = sequelize.define(
     },
     {
         timestamps: true,
-        tableName: "topics",
+        tableName: "exams",
     }
 );
 
-module.exports = Topic;
+module.exports = Exam;

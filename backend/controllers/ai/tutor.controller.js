@@ -1,45 +1,78 @@
-const { generateAITutorResponse } = require("../../services/aiTutorService");
+const { generateResponse } = require("../../ai/services/ai.service");
+const tutorPrompt = require("../../ai/prompts/tutor.prompt");
+
+const {
+    sendSuccessResponse
+} = require("../../utils/ai/aiResponseFormatter");
+
+const errorHandler = require("../../utils/ai/aiErrorHandler");
+
+const {
+    handleAIError
+} = errorHandler;
+
 
 const tutorChat = async (req, res) => {
+
     try {
-        const { prompt, subject, topic, question } = req.body;
 
-        let userMessage = question || prompt;
+        const {
+            prompt,
+            subject,
+            topic,
+            question
+        } = req.body;
 
-        if (!userMessage || !userMessage.trim()) {
-            return res.status(400).json({
-                success: false,
-                message: "Please enter a question."
-            });
-        }
 
-        if (subject || topic) {
-            userMessage = `
+        let userQuery;
+
+
+        // New intelligent tutor format
+        if (question) {
+
+            userQuery = `
 Subject: ${subject || "General"}
+
 Topic: ${topic || "General"}
 
 Student Question:
-${userMessage}
-`;
+${question}
+            `;
+
         }
 
-        const reply = await generateAITutorResponse(userMessage);
+        // Old tutor format support
+        else {
 
-        return res.status(200).json({
-            success: true,
-            data: {
-                response: reply
-            }
-        });
+            userQuery = prompt;
+
+        }
+
+
+        const response = await generateResponse(
+            tutorPrompt,
+            userQuery
+        );
+
+
+        return sendSuccessResponse(
+            res,
+            response
+        );
+
 
     } catch (error) {
-        console.error("AI Tutor Controller Error:", error);
 
-        return res.status(500).json({
-            success: false,
-            message: "An unexpected AI error occurred"
-        });
+        return handleAIError(
+            res,
+            error
+        );
+
     }
+
 };
 
-module.exports = { tutorChat };
+
+module.exports = {
+    tutorChat
+};

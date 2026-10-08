@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, GraduationCap, ArrowLeft } from "lucide-react";
-import { forgotPassword } from "../services/authservice";
+import { forgotPassword } from "../services/authService";
 
 
 export default function ForgotPassword(){

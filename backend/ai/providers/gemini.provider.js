@@ -1,5 +1,6 @@
 const BaseAIProvider = require("./base.provider");
 const ai = require("../config/gemini.config");
+const aiConfig = require("../config/ai.config");
 
 const { retryAIRequest } = require("../../utils/ai/aiRetry");
 
@@ -9,7 +10,7 @@ const {
     logAIError
 } = require("../../utils/ai/aiLogger");
 
-const DEFAULT_MODEL = "gemini-3.5-flash";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 class GeminiProvider extends BaseAIProvider {
 
@@ -40,31 +41,37 @@ class GeminiProvider extends BaseAIProvider {
                 userPrompt
             });
 
-            const response = await retryAIRequest(async () => {
+            const response = await retryAIRequest(
+                async () => {
 
-                const request = {
-                    model: this.model,
-                    contents: prompt
-                };
+                    const request = {
+                        model: this.model,
+                        contents: prompt
+                    };
 
-                // These will be used when we add
-                // provider-specific generation settings.
-                if (temperature !== undefined || maxTokens !== undefined) {
+                    // These will be used when we add
+                    // provider-specific generation settings.
+                    if (
+                        temperature !== undefined ||
+                        maxTokens !== undefined
+                    ) {
 
-                    request.config = {};
+                        request.config = {};
 
-                    if (temperature !== undefined) {
-                        request.config.temperature = temperature;
+                        if (temperature !== undefined) {
+                            request.config.temperature = temperature;
+                        }
+
+                        if (maxTokens !== undefined) {
+                            request.config.maxOutputTokens = maxTokens;
+                        }
                     }
 
-                    if (maxTokens !== undefined) {
-                        request.config.maxOutputTokens = maxTokens;
-                    }
-                }
+                    return await ai.models.generateContent(request);
 
-                return await ai.models.generateContent(request);
-
-            });
+                },
+                aiConfig.retry.maxAttempts
+            );
 
             const responseTime = Date.now() - startTime;
 

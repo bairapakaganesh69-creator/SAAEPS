@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, GraduationCap } from "lucide-react";
-import { login } from "../services/authservice";
+import { login } from "../services/authService";
 
 
 export default function Login() {
@@ -101,15 +101,14 @@ setMessage(
 
 
 
-setTimeout(() => {
+setTimeout(()=>{
 
-    if (res.data.user.role === "admin") {
-        navigate("/Dashboard");
-    } else if (res.data.user.role === "student") {
-        navigate("/student-dashboard");
-    }
 
-}, 800);
+navigate("/dashboard");
+
+
+},800);
+
 
 
 }
@@ -126,7 +125,7 @@ err?.response?.data?.message;
 switch(backendMessage){
 
 
-case "Invalid Password":
+case "Invalid password":
 
 setError("Incorrect password");
 
@@ -183,6 +182,12 @@ setLoading(false);
 
 
 };
+
+
+
+
+
+
 return(
 
 

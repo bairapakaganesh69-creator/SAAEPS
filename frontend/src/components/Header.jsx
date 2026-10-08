@@ -1,10 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useNotifications } from "../context/NotificationContext";
+
 
 function Header({ user = {}, setSidebarOpen }) {
 
-const { unreadCount } = useNotifications();
+
   return (
 
     <header className="
@@ -92,38 +91,27 @@ const { unreadCount } = useNotifications();
 
 
 
- {/* Notification */}
+        {/* Notification */}
 
-<Link
-  to="/student/notifications"
-  className="relative text-2xl cursor-pointer"
-  aria-label="Notifications"
->
-  🔔
+        <button className="relative text-2xl">
 
-  {unreadCount > 0 && (
-    <span
-      className="
-        absolute
-        -top-2
-        -right-2
-        bg-red-500
-        text-white
-        text-xs
-        font-bold
-        rounded-full
-        min-w-[20px]
-        h-[20px]
-        flex
-        items-center
-        justify-center
-        px-1
-      "
-    >
-      {unreadCount}
-    </span>
-  )}
-</Link>
+          🔔
+
+          <span className="
+            absolute
+            -top-2
+            -right-2
+            bg-red-500
+            text-white
+            text-xs
+            rounded-full
+            px-1
+          ">
+            3
+          </span>
+
+        </button>
+
 
 
 
