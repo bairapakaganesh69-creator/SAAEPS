@@ -6,8 +6,6 @@ const TestQuestion = require("../TestQuestion");
 const TestAttempt = require("../TestAttempt");
 const TestAttemptAnswer = require("../TestAttemptAnswer");
 const User = require("../User");
-const Notification = require("../Notification");
-const Resource = require("../Resource");
 // Subject → Topic
 Subject.hasMany(Topic, {
     foreignKey: "subjectId",
@@ -17,15 +15,7 @@ Subject.hasMany(Topic, {
 Topic.belongsTo(Subject, {
     foreignKey: "subjectId",
 });
-// Subject → Resource
-Subject.hasMany(Resource, {
-    foreignKey: "subjectId",
-    onDelete: "CASCADE",
-});
 
-Resource.belongsTo(Subject, {
-    foreignKey: "subjectId",
-});
 // Topic → Question
 Topic.hasMany(Question, {
     foreignKey: "topicId",
@@ -35,15 +25,7 @@ Topic.hasMany(Question, {
 Question.belongsTo(Topic, {
     foreignKey: "topicId",
 });
-// Topic → Resource
-Topic.hasMany(Resource, {
-    foreignKey: "topicId",
-    onDelete: "SET NULL",
-});
 
-Resource.belongsTo(Topic, {
-    foreignKey: "topicId",
-});
 // Subject → Question
 Subject.hasMany(Question, {
     foreignKey: "subjectId",
@@ -90,15 +72,7 @@ User.hasMany(TestAttempt, {
 TestAttempt.belongsTo(User, {
     foreignKey: "userId",
 });
-// User → Notification
-User.hasMany(Notification, {
-    foreignKey: "userId",
-    onDelete: "CASCADE",
-});
 
-Notification.belongsTo(User, {
-    foreignKey: "userId",
-});
 // Test → TestAttempt
 Test.hasMany(TestAttempt, {
     foreignKey: "testId",
@@ -137,6 +111,4 @@ module.exports = {
     TestAttempt,
     TestAttemptAnswer,
     User,
-    Notification,
-    Resource,
 };

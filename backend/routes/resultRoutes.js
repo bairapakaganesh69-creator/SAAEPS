@@ -10,7 +10,7 @@ const {
 
 // Get Result By Attempt ID
 router.get(
-    "/:attemptId",
+    "/attempt/:attemptId",
     authMiddleware,
     getResultByAttemptId
 );
