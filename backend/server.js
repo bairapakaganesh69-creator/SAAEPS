@@ -24,6 +24,15 @@ const testRoutes = require("./routes/testRoutes");
 const resultRoutes = require("./routes/resultRoutes");
 const testAttemptRoutes = require("./routes/testAttemptRoutes");
 
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const performanceRoutes = require("./routes/performanceRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const resourceRoutes = require("./routes/resourceRoutes");
+const aiFeedbackRoutes = require("./routes/aiFeedbackRoutes");
+const aiTutorRoutes = require("./routes/aiTutorRoutes");
+const weakTopicRoutes = require("./routes/weakTopicRoutes");
+
+
 console.log("✅ authRoutes loaded");
 console.log("✅ aiRoutes loaded");
 console.log("✅ subjectRoutes loaded");
@@ -54,6 +63,15 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/tests", testRoutes);
 app.use("/api/results", resultRoutes);
 app.use("/api/test-attempts", testAttemptRoutes);
+
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/performance", performanceRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/resources", resourceRoutes);
+app.use("/api/ai-feedback", aiFeedbackRoutes);
+app.use("/api/ai-tutor", aiTutorRoutes);
+app.use("/api/weak-topics", weakTopicRoutes);
+
 
 app.get("/", (req, res) => {
     res.send("🚀 Welcome to SAAEPS Backend");
