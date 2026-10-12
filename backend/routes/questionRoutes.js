@@ -1,6 +1,9 @@
-const express = require("express");
 
+const express = require("express");
 const router = express.Router();
+
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 const {
     createQuestion,
@@ -10,33 +13,49 @@ const {
     deleteQuestion,
 } = require("../controllers/questionController");
 
-// Create Question
-router.post(
-    "/",
-    createQuestion
-);
+// --------------------------------
+// AUTHENTICATED USERS
+// --------------------------------
 
-// Get All Questions
+// Get all questions
 router.get(
     "/",
+    authMiddleware,
     getQuestions
 );
 
-// Get Questions By Topic
+// Get questions by topic
 router.get(
     "/topic/:topicId",
+    authMiddleware,
     getQuestionsByTopic
 );
 
-// Update Question
+// --------------------------------
+// ADMIN QUESTION MANAGEMENT
+// --------------------------------
+
+// Create question
+router.post(
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    createQuestion
+);
+
+// Update question
 router.put(
     "/:id",
+    authMiddleware,
+    roleMiddleware("admin"),
     updateQuestion
 );
 
-// Delete Question
+// Delete question
 router.delete(
     "/:id",
+    authMiddleware,
+    roleMiddleware("admin"),
     deleteQuestion
 );
 

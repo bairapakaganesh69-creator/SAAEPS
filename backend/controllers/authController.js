@@ -192,16 +192,10 @@ const loginUser = async (req, res) => {
 // GET PROFILE
 // --------------------------------
 
+
 const getProfile = async (req, res) => {
     try {
-        const user = await User.findByPk(
-            req.user.id,
-            {
-                attributes: {
-                    exclude: ["password"],
-                },
-            }
-        );
+        const user = await User.findByPk(req.user.id);
 
         if (!user) {
             return res.status(404).json({
@@ -210,20 +204,34 @@ const getProfile = async (req, res) => {
             });
         }
 
+        const profile = {
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            role: user.role,
+            department: user.department,
+            year: user.year,
+            phone: user.phone,
+            isVerified: user.isVerified,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        };
+
         return res.status(200).json({
             success: true,
             message: "Profile Retrieved Successfully",
-            user,
+            user: profile,
         });
     } catch (error) {
         console.error("Get Profile Error:", error);
 
         return res.status(500).json({
             success: false,
-            message: "Server Error",
+            message: "Failed to retrieve profile",
         });
     }
 };
+
 
 // --------------------------------
 // ADMIN DASHBOARD
@@ -240,10 +248,18 @@ const adminDashboard = async (req, res) => {
 // UPDATE PROFILE
 // --------------------------------
 
+// UPDATE PROFILE
 const updateProfile = async (req, res) => {
     try {
-        const { fullName } = req.body;
+        const {
+            fullName,
+            email,
+            department,
+            year,
+            phone,
+        } = req.body;
 
+        // Validate required fields
         if (!fullName || !fullName.trim()) {
             return res.status(400).json({
                 success: false,
@@ -251,6 +267,14 @@ const updateProfile = async (req, res) => {
             });
         }
 
+        if (!email || !email.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is required",
+            });
+        }
+
+        // Find current user
         const user = await User.findByPk(req.user.id);
 
         if (!user) {
@@ -260,7 +284,26 @@ const updateProfile = async (req, res) => {
             });
         }
 
+        // Check whether another user already uses this email
+        const existingUser = await User.findOne({
+            where: {
+                email: email.trim(),
+            },
+        });
+
+        if (existingUser && existingUser.id !== user.id) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is already registered",
+            });
+        }
+
+        // Update profile
         user.fullName = fullName.trim();
+        user.email = email.trim();
+        user.department = department?.trim() || null;
+        user.year = year?.trim() || null;
+        user.phone = phone?.trim() || null;
 
         await user.save();
 
@@ -271,6 +314,9 @@ const updateProfile = async (req, res) => {
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
+                department: user.department,
+                year: user.year,
+                phone: user.phone,
                 role: user.role,
                 isVerified: user.isVerified,
             },

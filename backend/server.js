@@ -25,6 +25,11 @@ const performanceRoutes = require("./routes/performanceRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
+const aiRoutes = require("./routes/ai.routes");
+const {
+    startLlamaCpp,
+    stopLlamaCpp,
+} = require("./ai/services/llamaCppManager");
 
 const app = express();
 
@@ -53,6 +58,7 @@ app.use("/api/performance", performanceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/resources", resourceRoutes);
+app.use("/api/ai", aiRoutes);
 
 // --------------------------------
 // ROOT ROUTE
@@ -67,33 +73,51 @@ app.get("/", (req, res) => {
 // --------------------------------
 
 const PORT = process.env.PORT || 5000;
+let server = null;
 
 const startServer = async () => {
     try {
+        await startLlamaCpp();
+
         await sequelize.authenticate();
 
-        console.log(
-            "✅ MySQL Connected Successfully"
-        );
+        console.log("✅ MySQL Connected Successfully");
 
         await sequelize.sync();
 
-        console.log(
-            "✅ Database Synchronized"
-        );
+        console.log("✅ Database Synchronized");
 
-        app.listen(PORT, () => {
-            console.log(
-                `🚀 Server running on port ${PORT}`
-            );
+        server = app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
         });
-
     } catch (error) {
-        console.error(
-            "❌ Server Startup Failed:",
-            error.message
-        );
+        console.error("❌ Server Startup Failed:", error.message);
+        try {
+            await stopLlamaCpp();
+        } catch (cleanupError) {
+            console.error("llama.cpp cleanup error:", cleanupError.message);
+        }
+        process.exitCode = 1;
     }
 };
+
+const shutdown = async (signal) => {
+    console.log(`\n${signal} received. Shutting down SAAEPS...`);
+
+    if (server) {
+        await new Promise((resolve) => server.close(resolve));
+    }
+
+    try {
+        await stopLlamaCpp();
+    } catch (error) {
+        console.error("llama.cpp shutdown error:", error.message);
+    }
+
+    process.exit(0);
+};
+
+process.once("SIGINT", () => shutdown("SIGINT"));
+process.once("SIGTERM", () => shutdown("SIGTERM"));
 
 startServer();

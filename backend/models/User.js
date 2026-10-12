@@ -31,7 +31,28 @@ const User = sequelize.define(
       defaultValue: "student",
     },
 
-    // NEW FIELDS
+    // --------------------------------
+    // STUDENT PROFILE INFORMATION
+    // --------------------------------
+
+    department: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    year: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    // --------------------------------
+    // EMAIL VERIFICATION
+    // --------------------------------
 
     isVerified: {
       type: DataTypes.BOOLEAN,
@@ -47,19 +68,25 @@ const User = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
-    resetOTP: {
-    type: DataTypes.STRING,
-    allowNull: true,
-},
 
-resetOTPExpires: {
-    type: DataTypes.DATE,
-    allowNull: true,
-},
-resetOTPVerified: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-},
+    // --------------------------------
+    // PASSWORD RESET
+    // --------------------------------
+
+    resetOTP: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    resetOTPExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+
+    resetOTPVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     timestamps: true,
