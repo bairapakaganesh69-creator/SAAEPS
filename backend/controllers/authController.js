@@ -192,16 +192,10 @@ const loginUser = async (req, res) => {
 // GET PROFILE
 // --------------------------------
 
+
 const getProfile = async (req, res) => {
     try {
-        const user = await User.findByPk(
-            req.user.id,
-            {
-                attributes: {
-                    exclude: ["password"],
-                },
-            }
-        );
+        const user = await User.findByPk(req.user.id);
 
         if (!user) {
             return res.status(404).json({
@@ -210,20 +204,34 @@ const getProfile = async (req, res) => {
             });
         }
 
+        const profile = {
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            role: user.role,
+            department: user.department,
+            year: user.year,
+            phone: user.phone,
+            isVerified: user.isVerified,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        };
+
         return res.status(200).json({
             success: true,
             message: "Profile Retrieved Successfully",
-            user,
+            user: profile,
         });
     } catch (error) {
         console.error("Get Profile Error:", error);
 
         return res.status(500).json({
             success: false,
-            message: "Server Error",
+            message: "Failed to retrieve profile",
         });
     }
 };
+
 
 // --------------------------------
 // ADMIN DASHBOARD

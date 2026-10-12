@@ -1,12 +1,10 @@
 const ProviderManager = require("./providerManager");
-const OllamaProvider = require("../providers/ollama.provider");
+const LlamaCppProvider = require("../providers/llama-cpp.provider");
 
 const providerManager = new ProviderManager();
 
 // Local AI provider
-providerManager.registerProvider(
-    new OllamaProvider()
-);
+providerManager.registerProvider(new LlamaCppProvider());
 
 const generateResponse = async (
     systemPrompt,

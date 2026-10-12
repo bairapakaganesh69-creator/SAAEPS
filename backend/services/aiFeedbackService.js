@@ -1,7 +1,10 @@
-const AI_URL = "http://127.0.0.1:1234/v1/chat/completions";
+const AI_URL = `${
+    process.env.LLAMA_CPP_BASE_URL || "http://127.0.0.1:1234"
+}/v1/chat/completions`;
 
 const MODEL =
-    "C:\\Users\\gpt-warriors\\.lmstudio\\models\\lmstudio-community\\Qwen3-4B-GGUF\\Qwen3-4B-Q4_K_M.gguf";
+    process.env.LLAMA_CPP_MODEL_PATH ||
+    "Qwen3";
 
 /**
  * Generate AI-powered feedback using local Qwen3 through llama.cpp.
@@ -107,7 +110,11 @@ Rules:
 
                         temperature: 0.3,
 
-                        max_tokens: 150,
+			max_tokens: 150,
+
+			chat_template_kwargs: {
+    enable_thinking: false,
+},
                     }),
                 }
             );

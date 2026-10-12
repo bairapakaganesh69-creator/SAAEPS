@@ -9,21 +9,25 @@ const MockTests = () => {
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
 
+const [previousAttempts, setPreviousAttempts] = useState([]);
+const [historyLoading, setHistoryLoading] = useState(true);
+const [viewingPreviousResult, setViewingPreviousResult] = useState(false);
+
+
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   // Load available tests
+  // Load available tests and previous attempts
   useEffect(() => {
     const loadTests = async () => {
       try {
         const response = await api.get("/tests");
-
         setTests(response.data?.tests || []);
       } catch (err) {
         console.error("Load Tests Error:", err);
-
         setError(
           err.response?.data?.message ||
             "Failed to load mock tests."
@@ -33,8 +37,54 @@ const MockTests = () => {
       }
     };
 
+    const loadPreviousAttempts = async () => {
+      try {
+        const response = await api.get(
+          "/test-attempts/my-attempts"
+        );
+
+        setPreviousAttempts(response.data?.attempts || []);
+      } catch (err) {
+        console.error("Load Previous Attempts Error:", err);
+        setPreviousAttempts([]);
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+
     loadTests();
+    loadPreviousAttempts();
   }, []);
+
+
+  // View a previously submitted result
+  const handleViewResult = async (attemptId) => {
+    setError("");
+
+    try {
+      const response = await api.get(`/results/${attemptId}`);
+      const data = response.data;
+
+      if (!data?.result) {
+        throw new Error("Result details were not returned.");
+      }
+
+      setResult({
+        ...data.result,
+        answers: data.answers || [],
+      });
+
+      setViewingPreviousResult(true);
+    } catch (err) {
+      console.error("View Previous Result Error:", err);
+
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to load the previous result."
+      );
+    }
+  };
 
   // Start selected test
   const handleStartTest = async (test) => {
@@ -443,21 +493,77 @@ const MockTests = () => {
                   {result.totalMarks ?? 0}
                 </p>
               </div>
-
             </div>
+<div className="mt-8 rounded-xl bg-gray-50 p-5 text-left">
+  <p className="font-semibold text-gray-800">
+    {viewingPreviousResult ? "Previous Test Result" : "Performance Summary"}
+  </p>
 
-            <div className="mt-8 rounded-xl bg-gray-50 p-5 text-left">
-              <p className="font-semibold text-gray-800">
-                Performance Summary
-              </p>
+  <p className="mt-2 text-sm text-gray-500">
+    {result.testTitle || "Mock Test"}
+    {result.attemptId ? ` · Attempt #${result.attemptId}` : ""}
+  </p>
 
-              <p className="mt-2 text-sm text-gray-500">
-                Your result has been recorded and will be reflected in your performance analysis and weak-topic analysis.
-              </p>
-            </div>
+  {result.answers?.length > 0 && (
+    <div className="mt-6 space-y-4">
+      <h3 className="font-semibold text-gray-800">
+        Answer Review
+      </h3>
+
+      {result.answers.map((answer, index) => (
+        <div
+          key={answer.questionId || index}
+          className="rounded-xl border border-gray-200 bg-white p-4"
+        >
+          <p className="font-medium text-gray-900">
+            {index + 1}. {answer.question}
+          </p>
+
+          <p className="mt-3 text-sm text-gray-600">
+            Your answer:{" "}
+            <span
+              className={
+                answer.isCorrect
+                  ? "font-semibold text-green-700"
+                  : "font-semibold text-red-700"
+              }
+            >
+              {answer.selectedAnswer || "Not answered"}
+              {answer.selectedAnswer &&
+                answer[`option${answer.selectedAnswer}`]
+                ? ` — ${answer[`option${answer.selectedAnswer}`]}`
+                : ""}
+            </span>
+          </p>
+
+          <p className="mt-1 text-sm text-gray-600">
+            Correct answer:{" "}
+            <span className="font-semibold text-green-700">
+              {answer.correctAnswer || "Not available"}
+              {answer.correctAnswer &&
+                answer[`option${answer.correctAnswer}`]
+                ? ` — ${answer[`option${answer.correctAnswer}`]}`
+                : ""}
+            </span>
+          </p>
+
+          {answer.explanation && (
+            <p className="mt-3 text-sm leading-6 text-gray-500">
+              Explanation: {answer.explanation}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
 
             <button
-              onClick={handleBack}
+              onClick={() => {
+  handleBack();
+  setViewingPreviousResult(false);
+}}
               className="mt-8 rounded-xl bg-blue-600 px-7 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
               Back to Mock Tests
@@ -513,6 +619,90 @@ const MockTests = () => {
             {error}
           </div>
         )}
+
+
+      {/* Previous Attempts */}
+      <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm">
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-gray-900">
+            Previous Attempts
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Review your completed tests and continue tracking your progress.
+          </p>
+        </div>
+
+        {historyLoading ? (
+          <p className="text-sm text-gray-500">
+            Loading your test history...
+          </p>
+        ) : previousAttempts.length === 0 ? (
+          <p className="rounded-xl bg-gray-50 p-4 text-sm text-gray-500">
+            No previous attempts found. Start a mock test to see your history here.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {previousAttempts.map((item) => {
+              const submitted = item.status === "Submitted";
+
+              return (
+                <div
+                  key={item.attemptId}
+                  className="flex flex-col gap-4 rounded-xl border border-gray-200 p-4 md:flex-row md:items-center md:justify-between"
+                >
+                  <div>
+                    <h3 className="font-semibold text-gray-900">
+                      {item.testTitle || "Mock Test"}
+                    </h3>
+
+                    <p className="mt-1 text-sm text-gray-500">
+                      {item.examType || "Mock Test"} · Attempt #{item.attemptId}
+                    </p>
+
+                    <p className="mt-1 text-sm text-gray-500">
+                      {item.submittedAt
+                        ? `Submitted: ${new Date(item.submittedAt).toLocaleString()}`
+                        : `Started: ${new Date(item.startedAt).toLocaleString()}`}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    {submitted && (
+                      <div className="text-left md:text-right">
+                        <p className="font-bold text-gray-900">
+                          {item.score ?? 0} / {item.totalMarks ?? 0}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {item.percentage ?? 0}%
+                        </p>
+                      </div>
+                    )}
+<span
+  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+    submitted
+      ? "bg-green-100 text-green-700"
+      : "bg-amber-100 text-amber-700"
+  }`}
+>
+  {item.status || "Unknown"}
+</span>
+
+{submitted && (
+  <button
+    onClick={() => handleViewResult(item.attemptId)}
+    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+  >
+    View Result
+  </button>
+)}
+
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
         {/* No Tests */}
         {tests.length === 0 ? (
