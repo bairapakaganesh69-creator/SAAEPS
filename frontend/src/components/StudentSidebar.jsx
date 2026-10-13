@@ -22,7 +22,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 },
 {
   name: "Subjects",
-  path: "/student-dashboard",
+  path: "/student/subjects",
 },
 
     {
