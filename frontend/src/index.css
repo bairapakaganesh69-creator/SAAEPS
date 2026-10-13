@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Make dark: utility classes follow the .dark class on the HTML element */
+@custom-variant dark (&:where(.dark, .dark *));
+
 * {
   box-sizing: border-box;
 }

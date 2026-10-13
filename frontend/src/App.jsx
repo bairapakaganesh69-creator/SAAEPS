@@ -18,6 +18,7 @@ import StudentDashboard from "./pages/StudentDashboard";
 import StudyPlanner from "./pages/StudyPlanner";
 import Performance from "./pages/Performance";
 import MockTests from "./pages/MockTests";
+import Subjects from "./pages/Subjects";
 
 // Authentication pages
 import Login from "./pages/Login";
@@ -112,6 +113,11 @@ function App() {
 <Route
   path="/student/settings"
   element={<Settings />}
+/>
+
+<Route
+  path="/student/subjects"
+  element={<Subjects />}
 />
 
         {/* ==================== ADMIN PANEL ==================== */}
