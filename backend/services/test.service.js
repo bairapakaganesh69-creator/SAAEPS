@@ -282,12 +282,41 @@ const startTestAttempt = async (
             },
         });
 
-    if (existingAttempt) {
-        return {
-            existing: true,
-            attempt: existingAttempt,
-        };
+
+if (existingAttempt) {
+    const durationMs = Number(test.duration) * 60 * 1000;
+    const startedAtMs = new Date(
+        existingAttempt.startedAt
+    ).getTime();
+
+    if (
+        !Number.isFinite(durationMs) ||
+        durationMs <= 0 ||
+        !Number.isFinite(startedAtMs)
+    ) {
+        const error = new Error(
+            "Invalid test duration or start time"
+        );
+        error.statusCode = 400;
+        throw error;
     }
+
+    const deadlineMs = startedAtMs + durationMs;
+
+    if (Date.now() >= deadlineMs) {
+        const error = new Error(
+            "Your previous test attempt has expired. Please contact your instructor or restart the attempt if permitted."
+        );
+        error.statusCode = 409;
+        throw error;
+    }
+
+    return {
+        existing: true,
+        attempt: existingAttempt,
+    };
+}
+
 
     const attempt =
         await TestAttempt.create({
@@ -396,7 +425,29 @@ const saveAnswer = async (
         error.statusCode = 400;
         throw error;
     }
+    // Enforce the test duration on the server
+    const durationMs = Number(test.duration) * 60 * 1000;
+    const startedAtMs = new Date(attempt.startedAt).getTime();
 
+    if (
+        !Number.isFinite(durationMs) ||
+        durationMs <= 0 ||
+        !Number.isFinite(startedAtMs)
+    ) {
+        const error = new Error(
+            "Invalid test duration or start time"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (Date.now() >= startedAtMs + durationMs) {
+        const error = new Error(
+            "Time is up. Your answers can no longer be changed. Please submit your test."
+        );
+        error.statusCode = 409;
+        throw error;
+    }
     // Check question
     const question =
         await Question.findByPk(

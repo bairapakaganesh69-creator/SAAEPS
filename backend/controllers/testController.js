@@ -179,57 +179,45 @@ const addQuestionToTest = async (
 // GET TEST QUESTIONS
 // --------------------------------
 
-const getTestQuestions = async (
-    req,
-    res
-) => {
+
+const getTestQuestions = async (req, res) => {
     try {
         const { testId } = req.params;
 
         const testQuestions =
-            await getTestQuestionsService(
-                testId
-            );
+            await getTestQuestionsService(testId);
 
         res.status(200).json({
             success: true,
-            count:
-                testQuestions.length,
+            count: testQuestions.length,
+            questions: testQuestions.map((item) => {
+                const question = item.Question.toJSON();
 
-            questions:
-                testQuestions.map(
-                    (item) => ({
-                        ...item.Question.toJSON(),
-
-                        questionOrder:
-                            item.questionOrder,
-                    })
-                ),
+                return {
+                    id: question.id,
+                    question: question.question,
+                    optionA: question.optionA,
+                    optionB: question.optionB,
+                    optionC: question.optionC,
+                    optionD: question.optionD,
+                    difficulty: question.difficulty,
+                    marks: question.marks,
+                    questionOrder: item.questionOrder,
+                };
+            }),
         });
-
     } catch (error) {
-        console.error(
-            "Get Test Questions Error:",
-            error
-        );
+        console.error("Get Test Questions Error:", error);
 
-        res.status(
-            error.statusCode || 500
-        ).json({
+        res.status(error.statusCode || 500).json({
             success: false,
-
-            message:
-                error.statusCode
-                    ? error.message
-                    : "Failed to Get Test Questions",
-
-            error:
-                error.statusCode
-                    ? undefined
-                    : error.message,
+            message: error.statusCode
+                ? error.message
+                : "Failed to Get Test Questions",
         });
     }
 };
+
 
 // --------------------------------
 // PUBLISH TEST
