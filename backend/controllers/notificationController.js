@@ -7,52 +7,39 @@ const {
     deleteNotification,
 } = require("../services/notification.service");
 
-const createNotificationController = async (
-    req,
-    res
-) => {
+
+const createNotificationController = async (req, res) => {
     try {
-        const {
-            title,
-            message,
-            type,
-            userId,
-        } = req.body;
+        const { title, message, type = "general" } = req.body;
 
         if (!title || !message) {
             return res.status(400).json({
                 success: false,
-                message:
-                    "Title and message are required",
+                message: "Title and message are required",
             });
         }
 
-        const notification =
-            await createNotification({
-                userId:
-                    userId || req.user.id,
-                title,
-                message,
-                type,
-            });
+        const notification = await createNotification({
+            userId: req.user.id,
+            title,
+            message,
+            type,
+        });
 
         return res.status(201).json({
             success: true,
             notification,
         });
     } catch (error) {
-        console.error(
-            "Create Notification Error:",
-            error
-        );
+        console.error("Create Notification Error:", error);
 
         return res.status(500).json({
             success: false,
-            message:
-                "Failed to create notification",
+            message: "Failed to create notification",
         });
     }
 };
+
 
 const getNotificationsController =
     async (req, res) => {

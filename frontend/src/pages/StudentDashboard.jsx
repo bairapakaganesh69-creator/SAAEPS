@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+
 import api from "../services/api";
 
 import StudentSidebar from "../components/StudentSidebar";
@@ -7,36 +12,44 @@ import DashboardCards from "../components/DashboardCards";
 import ProgressDashboard from "../components/ProgressDashboard";
 import RecentTests from "../components/RecentTests";
 import UpcomingExams from "../components/UpcomingExams";
-import StudentNotifications from "../components/StudentNotifications";
+import DashboardNotifications from "../components/DashboardNotifications";
 import QuickActions from "../components/QuickActions";
 
-function Dashboard() {
-  console.log("Dashboard loaded");
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null");
+  } catch {
+    return null;
+  }
+}
 
+function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  // Empty Dashboard State
+  const storedUser = getStoredUser();
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [dashboard, setDashboard] = useState({
     user: {
-  name: storedUser?.fullName || "Student",
-  email: storedUser?.email || "",
-},
-
+      name: storedUser?.fullName || "Student",
+      email: storedUser?.email || "",
+    },
     statistics: {
       subjects: 0,
       tests: 0,
       score: 0,
-      hours: 0,
+      hours: null,
     },
-
     progress: [],
     tests: [],
     exams: [],
-    notifications: [],
   });
 
-useEffect(() => {
-  const loadDashboard = async () => {
+  const loadDashboard = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
     try {
       const [dashboardRes, profileRes] = await Promise.all([
         api.get("/dashboard"),
@@ -46,22 +59,22 @@ useEffect(() => {
       const data = dashboardRes.data?.dashboard;
       const user = profileRes.data?.user;
 
-      // Latest profile from database
+      if (!data) {
+        throw new Error("Dashboard data was not returned by the server.");
+      }
+
       const currentUser = {
         name: user?.fullName || "Student",
         email: user?.email || "",
       };
 
-      // Keep localStorage synchronized
       if (user) {
-        const storedUser = JSON.parse(
-          localStorage.getItem("user") || "null"
-        );
+        const previousUser = getStoredUser();
 
         localStorage.setItem(
           "user",
           JSON.stringify({
-            ...storedUser,
+            ...previousUser,
             fullName: user.fullName,
             email: user.email,
             department: user.department,
@@ -73,86 +86,127 @@ useEffect(() => {
         );
       }
 
-      const recentTests = (data?.recentTests || []).map((test) => ({
-        name: test.testTitle,
-        score: test.percentage,
+      const recentTests = (data.recentTests || []).map((test) => ({
+        name: test.testTitle || "Mock Test",
+        score: test.percentage ?? 0,
+        scoreEarned: test.score,
+        totalMarks: test.totalMarks,
         date: test.submittedAt
           ? new Date(test.submittedAt).toLocaleDateString()
           : "-",
       }));
 
-      const progress = (data?.subjectPerformance || []).map((subject) => ({
-        subject: subject.subject,
-        progress: subject.accuracy,
-      }));
+      const progress = (data.subjectPerformance || []).map(
+        (subject) => ({
+          subject: subject.subject,
+          progress: subject.accuracy,
+        })
+      );
 
-      setDashboard((prev) => ({
-        ...prev,
-
+      setDashboard((previous) => ({
+        ...previous,
         user: currentUser,
-
         statistics: {
-          subjects: data?.subjectPerformance?.length || 0,
-          tests: data?.overview?.testsAttempted || 0,
-          score: data?.overview?.averagePercentage || 0,
-          hours: 0,
+          subjects: data.subjectPerformance?.length ?? 0,
+          tests: data.overview?.testsAttempted ?? 0,
+          score: data.overview?.averagePercentage ?? 0,
+          hours: null,
         },
-
-        progress: progress,
+        progress,
         tests: recentTests,
       }));
-    } catch (error) {
-      console.error("Dashboard Error:", error);
-    }
-  };
+    } catch (err) {
+      console.error("Dashboard Error:", err);
 
-  loadDashboard();
-}, []);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Unable to load your dashboard. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <StudentSidebar
-  sidebarOpen={sidebarOpen}
-  setSidebarOpen={setSidebarOpen}
-/>
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
-      {/* Main Content */}
-      <div className="flex-1">
-        {/* Header */}
+      <div className="min-w-0 flex-1">
         <Header
           user={dashboard.user}
           setSidebarOpen={setSidebarOpen}
         />
 
-        <main className="p-4 sm:p-6 space-y-6">
-          {/* Dashboard Cards */}
-          <DashboardCards
-            stats={dashboard.statistics}
-          />
+        <main className="space-y-6 p-4 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Student Dashboard
+              </h1>
+              <p className="mt-1 text-sm text-gray-500">
+                Track your exam preparation and performance.
+              </p>
+            </div>
 
-          {/* Learning Progress */}
+            <button
+              type="button"
+              onClick={loadDashboard}
+              disabled={loading}
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? "Refreshing..." : "Refresh"}
+            </button>
+          </div>
+
+          {error && (
+            <div
+              role="alert"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            >
+              <p>{error}</p>
+
+              <button
+                type="button"
+                onClick={loadDashboard}
+                disabled={loading}
+                className="font-semibold underline disabled:opacity-60"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
+          {loading && (
+            <p
+              role="status"
+              className="rounded-lg bg-blue-50 p-4 text-sm text-blue-700"
+            >
+              Loading your dashboard...
+            </p>
+          )}
+
+          <DashboardCards stats={dashboard.statistics} />
+
           <ProgressDashboard
             progressData={dashboard.progress}
           />
 
-          {/* Recent Tests & Upcoming Exams */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <RecentTests
-              tests={dashboard.tests}
-            />
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <RecentTests tests={dashboard.tests} />
 
-            <UpcomingExams
-              exams={dashboard.exams}
-            />
+            <UpcomingExams exams={dashboard.exams} />
           </div>
 
-          {/* Notifications */}
-          <StudentNotifications
-  notifications={dashboard.notifications}
-/>
+          <DashboardNotifications />
 
-          {/* Quick Actions */}
           <QuickActions />
         </main>
       </div>
