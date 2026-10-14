@@ -93,7 +93,7 @@ localStorage.setItem(
 JSON.stringify(res.data.user)
 );
 
-
+window.dispatchEvent(new Event("auth:changed"));
 
 setMessage(
 "Login successful"

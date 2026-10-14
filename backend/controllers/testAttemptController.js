@@ -3,6 +3,10 @@ const {
     getUserAttempts,
 } = require("../services/testAttempt.service");
 
+const {
+    createNotification,
+} = require("../services/notification.service");
+
 // Submit and Evaluate Test Attempt
 const submitTestAttempt = async (req, res) => {
     try {
@@ -15,6 +19,21 @@ const result = await evaluateTestAttempt(
     attemptId,
     userId
 );
+
+try {
+    await createNotification({
+        userId,
+        title: "Mock Test Completed",
+        message: `You completed your mock test with a score of ${result.score}/${result.totalMarks} (${result.percentage}%).`,
+        type: "test",
+    });
+} catch (notificationError) {
+    console.error(
+        "Failed to create test completion notification:",
+        notificationError.message
+    );
+}
+
         res.status(200).json({
             success: true,
             message: "Test Submitted Successfully",
