@@ -19,6 +19,7 @@ import StudyPlanner from "./pages/StudyPlanner";
 import Performance from "./pages/Performance";
 import MockTests from "./pages/MockTests";
 import Subjects from "./pages/Subjects";
+import WeakTopicAnalyzer from "./pages/WeakTopicAnalyzer";
 
 // Authentication pages
 import Login from "./pages/Login";
@@ -120,6 +121,10 @@ function App() {
   element={<Subjects />}
 />
 
+<Route
+  path="/student/weak-topics"
+  element={<WeakTopicAnalyzer />}
+/>
         {/* ==================== ADMIN PANEL ==================== */}
 
         <Route
