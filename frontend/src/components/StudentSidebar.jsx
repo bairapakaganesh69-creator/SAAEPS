@@ -30,6 +30,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   path: "/student/performance",
 },
 {
+  name: "Weak Topic Analyzer",
+  path: "/student/weak-topics",
+},
+{
   name: "Feedback",
   path: "/student/ai-feedback",
 },
