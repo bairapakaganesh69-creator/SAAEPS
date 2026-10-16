@@ -1,5 +1,5 @@
-const express = require("express");
 
+const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -8,6 +8,8 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 const {
     registerUser,
     loginUser,
+    googleAuth,
+    googleSetPassword,
     getProfile,
     updateProfile,
     changePassword,
@@ -31,40 +33,31 @@ router.post(
 );
 
 // Login
+router.post("/login", loginUser);
+
+// Google Sign-In
+router.post("/google", googleAuth);
+
+// Set password after Google registration
 router.post(
-    "/login",
-    loginUser
+    "/google/set-password",
+    googleSetPassword
 );
 
 // Email OTP Verification
-router.post(
-    "/verify-otp",
-    verifyOTP
-);
+router.post("/verify-otp", verifyOTP);
 
 // Resend Email OTP
-router.post(
-    "/resend-otp",
-    resendOTP
-);
+router.post("/resend-otp", resendOTP);
 
 // Forgot Password
-router.post(
-    "/forgot-password",
-    forgotPassword
-);
+router.post("/forgot-password", forgotPassword);
 
 // Verify Reset OTP
-router.post(
-    "/verify-reset-otp",
-    verifyResetOTP
-);
+router.post("/verify-reset-otp", verifyResetOTP);
 
 // Reset Password
-router.post(
-    "/reset-password",
-    resetPassword
-);
+router.post("/reset-password", resetPassword);
 
 // Get Profile
 router.get(
@@ -72,12 +65,14 @@ router.get(
     authMiddleware,
     getProfile
 );
+
 // Update Profile
 router.put(
     "/profile",
     authMiddleware,
     updateProfile
 );
+
 // Change Password
 router.put(
     "/change-password",
