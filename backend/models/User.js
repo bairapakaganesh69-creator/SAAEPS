@@ -1,3 +1,4 @@
+
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
@@ -26,15 +27,29 @@ const User = sequelize.define(
       allowNull: false,
     },
 
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    authProvider: {
+      type: DataTypes.ENUM("local", "google"),
+      allowNull: false,
+      defaultValue: "local",
+    },
+
+    passwordSetupRequired: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+
     role: {
       type: DataTypes.ENUM("student", "admin"),
       defaultValue: "student",
     },
 
-    // --------------------------------
-    // STUDENT PROFILE INFORMATION
-    // --------------------------------
-
+    // Student profile information
     department: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -50,10 +65,18 @@ const User = sequelize.define(
       allowNull: true,
     },
 
-    // --------------------------------
-    // EMAIL VERIFICATION
-    // --------------------------------
+    // Exam preferences
+    examType: {
+      type: DataTypes.ENUM("ECET", "POLYCET"),
+      allowNull: true,
+    },
 
+    branch: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    // Email verification
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -69,10 +92,7 @@ const User = sequelize.define(
       allowNull: true,
     },
 
-    // --------------------------------
-    // PASSWORD RESET
-    // --------------------------------
-
+    // Password reset
     resetOTP: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -91,6 +111,13 @@ const User = sequelize.define(
   {
     timestamps: true,
     tableName: "users",
+    indexes: [
+      {
+        name: "users_googleId_unique",
+        unique: true,
+        fields: ["googleId"],
+      },
+    ],
   }
 );
 

@@ -1,6 +1,10 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const { OAuth2Client } = require("google-auth-library");
+
+const googleClient = new OAuth2Client();
 
 const User = require("../models/User");
 const sendEmail = require("../services/emailService");
@@ -21,7 +25,7 @@ const registerUser = async (req, res) => {
             });
         }
 
-        const { fullName, email, password } = req.body;
+        const { fullName, email, password, examType, branch } = req.body;
 
         // Check if email already exists
         const existingUser = await User.findOne({
@@ -43,10 +47,12 @@ const registerUser = async (req, res) => {
 
         // Create user
         const user = await User.create({
-            fullName,
-            email,
-            password: hashedPassword,
-        });
+    fullName,
+    email,
+    password: hashedPassword,
+    examType,
+    branch: examType === "ECET" ? branch : null,
+});
 
         // Generate 4-digit OTP
         const otp = Math.floor(
@@ -112,7 +118,6 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Check required fields
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -120,9 +125,10 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Find user
+        const normalizedEmail = email.trim().toLowerCase();
+
         const user = await User.findOne({
-            where: { email },
+            where: { email: normalizedEmail },
         });
 
         if (!user) {
@@ -132,16 +138,21 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Check email verification
         if (!user.isVerified) {
             return res.status(401).json({
                 success: false,
-                message:
-                    "Please verify your email before logging in.",
+                message: "Please verify your email before logging in.",
             });
         }
 
-        // Compare password
+        // Prevent login before required password setup is complete.
+        if (user.passwordSetupRequired) {
+            return res.status(403).json({
+                success: false,
+                message: "Please complete your password setup first.",
+            });
+        }
+
         const isMatch = await bcrypt.compare(
             password,
             user.password
@@ -154,7 +165,6 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Generate JWT
         const token = jwt.sign(
             {
                 id: user.id,
@@ -187,6 +197,321 @@ const loginUser = async (req, res) => {
         });
     }
 };
+
+
+
+const googleAuth = async (req, res) => {
+    try {
+        const { credential } = req.body;
+
+        if (!credential) {
+            return res.status(400).json({
+                success: false,
+                message: "Google credential is required",
+            });
+        }
+
+        if (!process.env.GOOGLE_CLIENT_ID) {
+            return res.status(500).json({
+                success: false,
+                message: "Google authentication is not configured",
+            });
+        }
+
+        // Verify the Google ID token.
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+
+        if (
+            !payload ||
+            !payload.sub ||
+            !payload.email ||
+            payload.email_verified !== true
+        ) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid or unverified Google account",
+            });
+        }
+
+        const googleId = payload.sub;
+        const email = payload.email.trim().toLowerCase();
+        const fullName = payload.name || email.split("@")[0];
+
+        // Check whether this Google account already exists.
+        let user = await User.findOne({
+            where: { googleId },
+        });
+
+        if (user) {
+            if (user.email !== email) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Google account email does not match",
+                });
+            }
+
+            if (!user.isVerified) {
+                return res.status(200).json({
+                    success: true,
+                    requiresOTP: true,
+                    email: user.email,
+                    message: "Please verify your email using OTP",
+                });
+            }
+
+            if (user.passwordSetupRequired) {
+                return res.status(200).json({
+                    success: true,
+                    requiresPasswordSetup: true,
+                    email: user.email,
+                });
+            }
+
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                    email: user.email,
+                    role: user.role,
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: "1d" }
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: "Google sign-in successful",
+                token,
+                user: {
+                    id: user.id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    role: user.role,
+                },
+            });
+        }
+
+        // Do not automatically link a Google account to an existing
+        // email/password account.
+        const existingEmailUser = await User.findOne({
+            where: { email },
+        });
+
+        if (existingEmailUser) {
+            return res.status(409).json({
+                success: false,
+                message:
+                    "An account with this email already exists. Please use your existing login method.",
+            });
+        }
+
+        // Create the Google account before exam selection.
+        const randomPassword = crypto.randomBytes(32).toString("hex");
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);
+        const otp = crypto.randomInt(1000, 10000).toString();
+
+        user = await User.create({
+            fullName,
+            email,
+            password: hashedPassword,
+            googleId,
+            authProvider: "google",
+            passwordSetupRequired: true,
+            examType: null,
+            branch: null,
+            isVerified: false,
+            verificationOTP: otp,
+            otpExpires: new Date(Date.now() + 10 * 60 * 1000),
+        });
+
+        // Send the verification OTP to the user's email.
+        await sendEmail(
+            email,
+            "SAAEPS Email Verification OTP",
+            `Your SAAEPS verification OTP is ${otp}. It expires in 10 minutes.`
+        );
+
+        return res.status(201).json({
+            success: true,
+            requiresOTP: true,
+            email: user.email,
+            message: "OTP sent. Please verify your email.",
+        });
+    } catch (error) {
+        console.error("Google Auth Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Google authentication failed. Please try again.",
+        });
+    }
+};
+
+
+
+
+const googleSetPassword = async (req, res) => {
+    try {
+        const {
+            email,
+            newPassword,
+            credential,
+            examType,
+            branch,
+        } = req.body;
+
+        // 1. Validate required fields
+        if (
+            !email ||
+            typeof newPassword !== "string" ||
+            !newPassword.trim() ||
+            !credential ||
+            !examType
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Email, Google credential, exam type, and password are required.",
+            });
+        }
+
+        // 2. Validate exam type
+        if (!["ECET", "POLYCET"].includes(examType)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please select ECET or POLYCET.",
+            });
+        }
+
+        // 3. ECET requires a branch
+        if (
+            examType === "ECET" &&
+            !["CSE", "ECE"].includes(branch)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Please select CSE or ECE for ECET.",
+            });
+        }
+
+        // 4. Ensure Google OAuth is configured
+        if (!process.env.GOOGLE_CLIENT_ID) {
+            return res.status(500).json({
+                success: false,
+                message: "Google authentication is not configured.",
+            });
+        }
+
+        // 5. Verify the Google credential
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+
+        if (
+            !payload ||
+            !payload.sub ||
+            !payload.email ||
+            payload.email_verified !== true
+        ) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid or unverified Google account.",
+            });
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+        const googleEmail = payload.email.trim().toLowerCase();
+
+        // 6. Ensure the supplied email belongs to this Google account
+        if (normalizedEmail !== googleEmail) {
+            return res.status(403).json({
+                success: false,
+                message: "Google account email does not match.",
+            });
+        }
+
+        // 7. Find the correct Google user
+        const user = await User.findOne({
+            where: {
+                email: normalizedEmail,
+                authProvider: "google",
+            },
+        });
+
+        if (!user || user.googleId !== payload.sub) {
+            return res.status(404).json({
+                success: false,
+                message: "Google account not found. Please register again.",
+            });
+        }
+
+        if (!user.isVerified) {
+            return res.status(403).json({
+                success: false,
+                message: "Please verify your email before setting a password.",
+            });
+        }
+
+        if (!user.passwordSetupRequired) {
+            return res.status(400).json({
+                success: false,
+                message: "Password setup is already completed. Please log in.",
+            });
+        }
+
+        // 8. Hash the password (no minimum length restriction)
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // 9. Save the exam preferences and password
+        user.password = hashedPassword;
+        user.examType = examType;
+        user.branch = examType === "ECET" ? branch : null;
+        user.passwordSetupRequired = false;
+
+        await user.save();
+
+        // 10. Generate the login token
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        // 11. Return the successful result
+        return res.status(200).json({
+            success: true,
+            message: "Google registration completed successfully.",
+            token,
+            user: {
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                role: user.role,
+                examType: user.examType,
+                branch: user.branch,
+            },
+        });
+    } catch (error) {
+        console.error("Google Set Password Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to complete password setup. Please try again.",
+        });
+    }
+};
+
+
 
 // --------------------------------
 // GET PROFILE
@@ -784,9 +1109,12 @@ const resetPassword = async (req, res) => {
     }
 };
 
+
 module.exports = {
     registerUser,
     loginUser,
+    googleAuth,
+    googleSetPassword,
     getProfile,
     verifyOTP,
     resendOTP,
