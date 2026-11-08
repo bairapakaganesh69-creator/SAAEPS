@@ -1,0 +1,622 @@
+{
+  "schemaVersion": 1,
+  "exam": "TS POLYCET",
+  "year": 2025,
+  "paperCode": "A",
+  "answerKeyStatus": "PROVISIONAL",
+  "source": {
+    "questionPaper": "POLYCET_2025_QUESTION_PAPER(2).pdf",
+    "answerKey": "POLYCET_2025_ANSWER(2).pdf",
+    "answerKeyDocumentPages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "issuingOffice": "File No. SBTET/4/2021-O/o JOINT SECRETARY"
+  },
+  "count": 150,
+  "questions": [
+    {
+      "questionNumber": 1,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 2,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 3,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 4,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 5,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 6,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 7,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 8,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 9,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 10,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 11,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 12,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 13,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 14,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 15,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 16,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 17,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 18,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 19,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 20,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 21,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 22,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 23,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 24,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 25,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 26,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 27,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 28,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 29,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 30,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 31,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 32,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 33,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 34,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 35,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 36,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 37,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 38,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 39,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 40,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 41,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 42,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 43,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 44,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 45,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 46,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 47,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 48,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 49,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 50,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 51,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 52,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 53,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 54,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 55,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 56,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 57,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 58,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 59,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 60,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 61,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 62,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 63,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 64,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 65,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 66,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 67,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 68,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 69,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 70,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 71,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 72,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 73,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 74,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 75,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 76,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 77,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 78,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 79,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 80,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 81,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 82,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 83,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 84,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 85,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 86,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 87,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 88,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 89,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 90,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 91,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 92,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 93,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 94,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 95,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 96,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 97,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 98,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 99,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 100,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 101,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 102,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 103,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 104,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 105,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 106,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 107,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 108,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 109,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 110,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 111,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 112,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 113,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 114,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 115,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 116,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 117,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 118,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 119,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 120,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 121,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 122,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 123,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 124,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 125,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 126,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 127,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 128,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 129,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 130,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 131,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 132,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 133,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 134,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 135,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 136,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 137,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 138,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 139,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 140,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 141,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 142,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 143,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 144,
+      "correctOption": "B"
+    },
+    {
+      "questionNumber": 145,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 146,
+      "correctOption": "A"
+    },
+    {
+      "questionNumber": 147,
+      "correctOption": "D"
+    },
+    {
+      "questionNumber": 148,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 149,
+      "correctOption": "C"
+    },
+    {
+      "questionNumber": 150,
+      "correctOption": "B"
+    }
+  ]
+}
