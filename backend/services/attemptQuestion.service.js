@@ -24,27 +24,27 @@ const getAttemptQuestions = async (testId, attemptId, userId) => {
         throw error;
     }
 
+    const sourceRows = await TestQuestion.findAll({
+        where: { testId },
+        include: [{
+            model: Question,
+            include: [{ model: Subject, attributes: ["id", "name"] }],
+        }],
+        order: [["questionOrder", "ASC"]],
+    });
+
+    if (sourceRows.length === 0) {
+        const error = new Error("This test has no questions");
+        error.statusCode = 400;
+        throw error;
+    }
+
     let savedOrder = await TestAttemptQuestion.findAll({
         where: { attemptId },
         order: [["questionOrder", "ASC"]],
     });
 
     if (savedOrder.length === 0) {
-        const sourceRows = await TestQuestion.findAll({
-            where: { testId },
-            include: [{
-                model: Question,
-                include: [{ model: Subject, attributes: ["id", "name"] }],
-            }],
-            order: [["questionOrder", "ASC"]],
-        });
-
-        if (sourceRows.length === 0) {
-            const error = new Error("This test has no questions");
-            error.statusCode = 400;
-            throw error;
-        }
-
         const shuffled = shuffleQuestionsWithinSections(sourceRows);
         await TestAttemptQuestion.bulkCreate(
             shuffled.map((row) => ({
@@ -58,6 +58,22 @@ const getAttemptQuestions = async (testId, attemptId, userId) => {
             where: { attemptId },
             order: [["questionOrder", "ASC"]],
         });
+    }
+
+    // Never silently return a partial or stale sequence.
+    if (savedOrder.length !== sourceRows.length) {
+        throw new Error(
+            "Saved attempt question sequence is incomplete. Do not restart or overwrite this attempt; contact an administrator."
+        );
+    }
+
+    const expectedIds = new Set(sourceRows.map((row) => Number(row.questionId)));
+    const savedIds = savedOrder.map((row) => Number(row.questionId));
+    if (
+        new Set(savedIds).size !== savedIds.length ||
+        savedIds.some((id) => !expectedIds.has(id))
+    ) {
+        throw new Error("Saved attempt question sequence does not match its published test");
     }
 
     const questionIds = savedOrder.map((row) => row.questionId);
