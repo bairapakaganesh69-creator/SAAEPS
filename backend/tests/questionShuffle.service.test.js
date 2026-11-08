@@ -10,7 +10,7 @@ const makeRows = () => [
     { questionId: 5, questionOrder: 5, Question: { id: 5, subjectId: 20 } },
 ];
 
-test("shuffles questions without moving them between subject sections", () => {
+test("shuffles only inside subject sections and preserves every question ID", () => {
     const result = shuffleQuestionsWithinSections(makeRows(), (max) => max - 1);
     assert.equal(result.length, 5);
     assert.deepEqual(result.map((row) => row.questionId).sort((a, b) => a - b), [1, 2, 3, 4, 5]);
@@ -19,15 +19,12 @@ test("shuffles questions without moving them between subject sections", () => {
     assert.deepEqual(result.map((row) => row.questionOrder), [1, 2, 3, 4, 5]);
 });
 
-test("rejects questions without a subject association", () => {
-    assert.throws(
-        () => shuffleQuestionsWithinSections([
-            { questionId: 1, questionOrder: 1, Question: { id: 1 } },
-        ]),
-        /no subject association/
-    );
+test("rejects records without a subject association", () => {
+    assert.throws(() => shuffleQuestionsWithinSections([
+        { questionId: 1, questionOrder: 1, Question: { id: 1 } },
+    ]), /no subject association/);
 });
 
-test("rejects an empty question bank", () => {
+test("rejects an empty test", () => {
     assert.throws(() => shuffleQuestionsWithinSections([]), /no questions to shuffle/);
 });
