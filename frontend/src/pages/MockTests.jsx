@@ -104,7 +104,7 @@ const MockTests = () => {
       }
 
       const questionResponse = await api.get(
-        `/tests/${test.id}/questions`
+        `/tests/${test.id}/attempt/${newAttempt.id}/questions`
       );
 
       const startTime = new Date(
