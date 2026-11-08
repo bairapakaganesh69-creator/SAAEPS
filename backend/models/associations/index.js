@@ -1,6 +1,7 @@
 const Subject = require("../Subject");
 const Topic = require("../Topic");
 const Question = require("../Question");
+const QuestionSource = require("../QuestionSource");
 const Test = require("../Test");
 const TestQuestion = require("../TestQuestion");
 const TestAttempt = require("../TestAttempt");
@@ -54,6 +55,16 @@ Subject.hasMany(Question, {
 Question.belongsTo(Subject, {
     foreignKey: "subjectId",
 });
+// Question → source provenance
+Question.hasOne(QuestionSource, {
+    foreignKey: "questionId",
+    onDelete: "CASCADE",
+});
+
+QuestionSource.belongsTo(Question, {
+    foreignKey: "questionId",
+});
+
 // Test → TestQuestion
 Test.hasMany(TestQuestion, {
     foreignKey: "testId",
@@ -153,6 +164,7 @@ module.exports = {
     Subject,
     Topic,
     Question,
+    QuestionSource,
     Test,
     TestQuestion,
     TestAttempt,
