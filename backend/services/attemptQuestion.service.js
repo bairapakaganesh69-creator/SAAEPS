@@ -26,8 +26,13 @@ const getAttemptQuestions = async (testId, attemptId, userId) => {
 
     const sourceRows = await TestQuestion.findAll({
         where: { testId },
+        attributes: ["questionId", "questionOrder"],
         include: [{
             model: Question,
+            attributes: [
+                "id", "question", "optionA", "optionB", "optionC", "optionD",
+                "difficulty", "marks", "subjectId",
+            ],
             include: [{ model: Subject, attributes: ["id", "name"] }],
         }],
         order: [["questionOrder", "ASC"]],
@@ -60,7 +65,6 @@ const getAttemptQuestions = async (testId, attemptId, userId) => {
         });
     }
 
-    // Never silently return a partial or stale sequence.
     if (savedOrder.length !== sourceRows.length) {
         throw new Error(
             "Saved attempt question sequence is incomplete. Do not restart or overwrite this attempt; contact an administrator."
@@ -76,18 +80,12 @@ const getAttemptQuestions = async (testId, attemptId, userId) => {
         throw new Error("Saved attempt question sequence does not match its published test");
     }
 
-    const questionIds = savedOrder.map((row) => row.questionId);
-    const questionRows = await Question.findAll({
-        where: { id: questionIds },
-        attributes: [
-            "id", "question", "optionA", "optionB", "optionC", "optionD",
-            "difficulty", "marks",
-        ],
-    });
-    const byId = new Map(questionRows.map((question) => [Number(question.id), question]));
+    const questionById = new Map(
+        sourceRows.map((row) => [Number(row.questionId), row.Question])
+    );
 
     return savedOrder.map((row) => {
-        const question = byId.get(Number(row.questionId));
+        const question = questionById.get(Number(row.questionId));
         if (!question) {
             throw new Error("A saved attempt question is missing from the question bank");
         }
