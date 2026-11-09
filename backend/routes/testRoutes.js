@@ -4,7 +4,6 @@ const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
-const { getAttemptQuestionsController } = require("../controllers/attemptQuestionController");
 
 const {
     createTest,
@@ -92,13 +91,6 @@ router.post(
 );
 
 // --------------------------------
-// GET RANDOMIZED QUESTIONS FOR THIS ATTEMPT
-router.get(
-    "/:testId/attempt/:attemptId/questions",
-    authMiddleware,
-    getAttemptQuestionsController
-);
-
 // SAVE STUDENT ANSWER
 // --------------------------------
 

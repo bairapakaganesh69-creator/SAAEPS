@@ -1,11 +1,9 @@
 const Subject = require("../Subject");
 const Topic = require("../Topic");
 const Question = require("../Question");
-const QuestionSource = require("../QuestionSource");
 const Test = require("../Test");
 const TestQuestion = require("../TestQuestion");
 const TestAttempt = require("../TestAttempt");
-const TestAttemptQuestion = require("../TestAttemptQuestion");
 const TestAttemptAnswer = require("../TestAttemptAnswer");
 const User = require("../User");
 const Notification = require("../Notification");
@@ -55,16 +53,6 @@ Subject.hasMany(Question, {
 Question.belongsTo(Subject, {
     foreignKey: "subjectId",
 });
-// Question → source provenance
-Question.hasOne(QuestionSource, {
-    foreignKey: "questionId",
-    onDelete: "CASCADE",
-});
-
-QuestionSource.belongsTo(Question, {
-    foreignKey: "questionId",
-});
-
 // Test → TestQuestion
 Test.hasMany(TestQuestion, {
     foreignKey: "testId",
@@ -120,26 +108,6 @@ Test.hasMany(TestAttempt, {
 TestAttempt.belongsTo(Test, {
     foreignKey: "testId",
 });
-// TestAttempt → randomized attempt question order
-TestAttempt.hasMany(TestAttemptQuestion, {
-    foreignKey: "attemptId",
-    onDelete: "CASCADE",
-});
-
-TestAttemptQuestion.belongsTo(TestAttempt, {
-    foreignKey: "attemptId",
-});
-
-// Question → randomized attempt question order
-Question.hasMany(TestAttemptQuestion, {
-    foreignKey: "questionId",
-    onDelete: "CASCADE",
-});
-
-TestAttemptQuestion.belongsTo(Question, {
-    foreignKey: "questionId",
-});
-
 // TestAttempt → TestAttemptAnswer
 TestAttempt.hasMany(TestAttemptAnswer, {
     foreignKey: "attemptId",
@@ -164,11 +132,9 @@ module.exports = {
     Subject,
     Topic,
     Question,
-    QuestionSource,
     Test,
     TestQuestion,
     TestAttempt,
-    TestAttemptQuestion,
     TestAttemptAnswer,
     User,
     Notification,
